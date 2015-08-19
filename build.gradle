@@ -1,0 +1,24 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+def prob_version = "2.0.0-SNAPSHOT"
+def mainClass = "HelloProB"
+
+repositories {
+	mavenCentral()
+	maven {
+		name "snapshot"
+		url "https://oss.sonatype.org/content/repositories/snapshots/"
+	}
+}
+
+dependencies {
+	compile "de.hhu.stups:de.prob2.kernel:${prob_version}"
+    compile "de.hhu.stups:eventbstruct:2.5.0-SNAPSHOT"
+}
+
+task run(type:JavaExec) {
+   main = mainClass
+   args = ["-script", "scripts/"]
+   classpath = sourceSets.main.runtimeClasspath
+}
