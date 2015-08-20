@@ -2,9 +2,12 @@ package de.prob2.gen;
 
 import de.be4.eventb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.eventb.core.parser.node.AAction;
+import de.be4.eventb.core.parser.node.AAnticipatedConvergence;
+import de.be4.eventb.core.parser.node.AConvergentConvergence;
 import de.be4.eventb.core.parser.node.ADerivedGuard;
 import de.be4.eventb.core.parser.node.AExtendedEventRefinement;
 import de.be4.eventb.core.parser.node.AGuard;
+import de.be4.eventb.core.parser.node.AOrdinaryConvergence;
 import de.be4.eventb.core.parser.node.AParameter;
 import de.be4.eventb.core.parser.node.AWitness;
 import de.prob.model.eventb.Event;
@@ -59,5 +62,20 @@ public class EventExtractor extends DepthFirstAdapter {
 		list = list.addElement(new Event(node.getName().getText(),
 				EventType.ORDINARY, false));
 		eventM = new EventModifier(eventM.getEvent().set(Event.class, list));
+	}
+
+	@Override
+	public void caseAConvergentConvergence(AConvergentConvergence node) {
+		eventM = eventM.setType(EventType.CONVERGENT);
+	}
+
+	@Override
+	public void caseAOrdinaryConvergence(AOrdinaryConvergence node) {
+		eventM = eventM.setType(EventType.ORDINARY);
+	}
+
+	@Override
+	public void caseAAnticipatedConvergence(AAnticipatedConvergence node) {
+		eventM = eventM.setType(EventType.ANTICIPATED);
 	}
 }
