@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-	compile "de.hhu.stups:de.prob2.kernel:${prob_version}"
+		compile group: "de.hhu.stups", name: "de.prob2.kernel", version: prob_version, changing: true
     compile "de.hhu.stups:eventbstruct:2.5.0-SNAPSHOT"
 }
 
