@@ -1,0 +1,28 @@
+machine euclid
+  sees definitions limits
+variables u v
+invariants
+  @inv u : 0..k
+  @inv2 v : 0..k
+
+events
+  event INITIALISATION
+    then
+      @act u:=m
+      @act2 v:=n
+  end
+
+algorithm
+  while: u /= 0
+  do
+    if: u < v then
+      @u u := v ;
+      @v v := u
+    end ;
+    assert: v > u ;
+    @uu u := u - v
+  end ;
+  assert: u|->m|->n : IsGCD
+end
+
+end

@@ -1,0 +1,14 @@
+context definitions
+
+constants Divides IsGCD
+
+axioms
+  @axm Divides = {i↦j ∣ ∃k·k∈0‥j ∧ j = i∗k}
+  @axm2 IsGCD = {i↦j↦k ∣ i↦j ∈ Divides ∧ i↦k ∈ Divides ∧
+        (∀r· r ∈ (0‥j ∪ 0‥k)
+        ⇒  (r↦j ∈ Divides ∧ r↦k ∈ Divides ⇒ r↦i ∈ Divides)
+        )
+        }
+  @axm3 (3↦9↦6) ∈ IsGCD
+  @axm4 (5↦15↦25) ∈ IsGCD
+end
