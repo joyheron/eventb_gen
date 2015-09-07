@@ -1,9 +1,9 @@
 package de.prob2.gen;
 
-import de.be4.eventb.core.parser.BException;
-import de.be4.eventb.core.parser.EventBParser;
-import de.be4.eventb.core.parser.analysis.ASTPrinter;
-import de.be4.eventb.core.parser.node.Start;
+import de.be4.eventbalg.core.parser.BException;
+import de.be4.eventbalg.core.parser.EventBParser;
+import de.be4.eventbalg.core.parser.analysis.ASTPrinter;
+import de.be4.eventbalg.core.parser.node.Start;
 import de.prob.Main;
 import de.prob.model.eventb.EventBModel;
 import de.prob.scripting.StateSpaceProvider;

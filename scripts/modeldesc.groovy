@@ -1,3 +1,4 @@
+import de.prob.model.representation.ElementComment
 import de.prob2.gen.ModelGenerator
 
 c = """
@@ -15,7 +16,7 @@ end
 """
 
 m = """
-machine MLift // 
+machine MLift // so much to comment on!
  sees CLift 
 
 variables cur_floor inside_buttons door_open call_buttons direction_up 
@@ -111,6 +112,6 @@ ModelGenerator mg = new ModelGenerator();
 mg.addComponent(c);
 mg.addComponent(m);
 
-println mg.getModel().CLift.children
+println mg.getModel().MLift.getChildrenOfType(ElementComment.class).collect { it.getComment() }
 
 mg.getModel()

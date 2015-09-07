@@ -1,11 +1,17 @@
 package de.prob2.gen;
 
-import de.be4.eventb.core.parser.analysis.DepthFirstAdapter;
-import de.be4.eventb.core.parser.node.ADerivedInvariant;
-import de.be4.eventb.core.parser.node.AEvent;
-import de.be4.eventb.core.parser.node.AInvariant;
-import de.be4.eventb.core.parser.node.AVariable;
-import de.be4.eventb.core.parser.node.AVariant;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.base.Joiner;
+
+import de.be4.eventbalg.core.parser.analysis.DepthFirstAdapter;
+import de.be4.eventbalg.core.parser.node.ADerivedInvariant;
+import de.be4.eventbalg.core.parser.node.AEvent;
+import de.be4.eventbalg.core.parser.node.AInvariant;
+import de.be4.eventbalg.core.parser.node.AVariable;
+import de.be4.eventbalg.core.parser.node.AVariant;
+import de.be4.eventbalg.core.parser.node.TComment;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Event.EventType;
 import de.prob.model.eventb.EventBMachine;
@@ -16,8 +22,9 @@ public class MachineExtractor extends DepthFirstAdapter {
 
 	MachineModifier machineM;
 
-	public MachineExtractor(final EventBMachine machine) {
+	public MachineExtractor(final EventBMachine machine, String comment) {
 		machineM = new MachineModifier(machine);
+		machineM = machineM.addComment(comment);
 	}
 
 	public EventBMachine getMachine() {
@@ -26,35 +33,46 @@ public class MachineExtractor extends DepthFirstAdapter {
 
 	@Override
 	public void caseAVariable(final AVariable node) {
-		machineM = machineM.variable(node.getName().getText());
+		machineM = machineM.variable(node.getName().getText(),
+				getComment(node.getComments()));
 	}
 
 	@Override
 	public void caseAInvariant(final AInvariant node) {
 		machineM = machineM.invariant(node.getName().getText(), node
-				.getPredicate().getText());
+				.getPredicate().getText(), false,
+				getComment(node.getComments()));
 	}
 
 	@Override
 	public void caseADerivedInvariant(final ADerivedInvariant node) {
-		machineM = machineM.invariant(node.getName().getText(), node
-				.getPredicate().getText(), true);
+		machineM = machineM
+				.invariant(node.getName().getText(), node.getPredicate()
+						.getText(), true, getComment(node.getComments()));
 	}
 
 	@Override
 	public void caseAVariant(final AVariant node) {
-		machineM = machineM.variant(node.getExpression().getText());
+		machineM = machineM.variant(node.getExpression().getText(),
+				getComment(node.getComments()));
 	}
 
 	@Override
 	public void caseAEvent(final AEvent node) {
-		Event event = new Event(node.getName().getText(), EventType.ORDINARY,
-				false);
-
-		EventExtractor eE = new EventExtractor(event);
+		EventExtractor eE = new EventExtractor(new Event(node.getName()
+				.getText(), EventType.ORDINARY, false),
+				getComment(node.getComments()));
 		node.apply(eE);
+
 		machineM = new MachineModifier(machineM.getMachine().addTo(
-				BEvent.class, event));
+				BEvent.class, eE.getEvent()));
 	}
 
+	public String getComment(List<TComment> comments) {
+		List<String> cmts = new ArrayList<String>();
+		for (TComment tComment : comments) {
+			cmts.add(tComment.getText());
+		}
+		return Joiner.on("\n").join(cmts);
+	}
 }
