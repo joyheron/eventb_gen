@@ -2,6 +2,9 @@ package de.prob2.gen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 import com.google.common.base.Joiner;
 
@@ -18,8 +21,9 @@ public class ContextExtractor extends DepthFirstAdapter {
 
 	private ContextModifier contextM;
 
-	public ContextExtractor(final Context context, String comment) {
-		contextM = new ContextModifier(context);
+	public ContextExtractor(final Context context,
+			Set<IFormulaExtension> typeEnv, String comment) {
+		contextM = new ContextModifier(context, typeEnv);
 		contextM = contextM.addComment(comment);
 	}
 

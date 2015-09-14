@@ -1,0 +1,19 @@
+machine UseSeq
+  
+variables s
+invariants
+  @inv s : seq(INT)
+
+events
+  event INITIALISATION
+    then
+      @act s:=emptySeq
+  end
+  
+  event add
+  	any p
+  	where @grd p : 1..10
+  	then @act s := seqAppend(s,p)
+  end
+
+end

@@ -6,12 +6,21 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import de.be4.eventbalg.core.parser.BException;
 import de.be4.eventbalg.core.parser.EventBParser;
 import de.be4.eventbalg.core.parser.node.Start;
 import de.prob.Main;
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.eventb.ModelModifier;
 import de.prob.model.eventb.translate.ModelToXML;
 import de.prob.scripting.StateSpaceProvider;
 
@@ -25,6 +34,8 @@ public class ModelGenerator {
 				StateSpaceProvider.class));
 		File file = new File(path);
 		checkFile(file, true);
+		model = extractTheories(model, path);
+
 		File[] files = file.listFiles(new FilenameFilter() {
 
 			@Override
@@ -64,6 +75,31 @@ public class ModelGenerator {
 		System.out.println("Rodin project written to: " + path + projectName
 				+ File.separator);
 
+	}
+
+	@SuppressWarnings("unchecked")
+	private EventBModel extractTheories(EventBModel model, String path)
+			throws IOException {
+		File theoryPath = new File(path + File.separator + "TheoryPath.json");
+		if (!theoryPath.exists()) {
+			return model;
+		}
+		ModelModifier mm = new ModelModifier(model);
+		String file = readFile(theoryPath);
+		Gson gson = new Gson();
+		Type type = new TypeToken<Map<String, List<String>>>() {
+		}.getType();
+		Map<String, List<String>> fromJson = (Map<String, List<String>>) gson
+				.fromJson(file, type);
+		for (Entry<String, List<String>> theory : fromJson.entrySet()) {
+			LinkedHashMap<String, Object> properties = new LinkedHashMap<String, Object>();
+			properties.put("workspace", path);
+			properties.put("project", theory.getKey());
+			properties.put("theories", theory.getValue());
+			mm = mm.loadTheories(properties);
+		}
+
+		return mm.getModel();
 	}
 
 	public String readFile(File file) throws IOException {

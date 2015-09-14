@@ -2,6 +2,9 @@ package de.prob2.gen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 import com.google.common.base.Joiner;
 
@@ -24,9 +27,14 @@ import de.prob.model.representation.ModelElementList;
 public class EventExtractor extends DepthFirstAdapter {
 
 	private EventModifier eventM;
+	private Set<IFormulaExtension> typeEnv;
+	private boolean initialisation;
 
-	public EventExtractor(final Event event, String comment) {
-		eventM = new EventModifier(event);
+	public EventExtractor(final Event event, Set<IFormulaExtension> typeEnv,
+			String comment) {
+		this.typeEnv = typeEnv;
+		initialisation = event.getName() == "INITIALISATION";
+		eventM = new EventModifier(event, initialisation, typeEnv);
 		eventM = eventM.addComment(comment);
 	}
 
@@ -69,7 +77,8 @@ public class EventExtractor extends DepthFirstAdapter {
 		ModelElementList<Event> list = new ModelElementList<Event>();
 		Event e = new Event(node.getName().getText(), EventType.ORDINARY, false);
 		list = list.addElement(e);
-		eventM = new EventModifier(eventM.getEvent().set(Event.class, list));
+		eventM = new EventModifier(eventM.getEvent().set(Event.class, list),
+				initialisation, typeEnv);
 	}
 
 	@Override

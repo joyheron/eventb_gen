@@ -2,6 +2,9 @@ package de.prob2.gen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 import com.google.common.base.Joiner;
 
@@ -21,9 +24,12 @@ import de.prob.model.representation.BEvent;
 public class MachineExtractor extends DepthFirstAdapter {
 
 	MachineModifier machineM;
+	private Set<IFormulaExtension> typeEnv;
 
-	public MachineExtractor(final EventBMachine machine, String comment) {
-		machineM = new MachineModifier(machine);
+	public MachineExtractor(final EventBMachine machine,
+			Set<IFormulaExtension> typeEnv, String comment) {
+		this.typeEnv = typeEnv;
+		machineM = new MachineModifier(machine, typeEnv);
 		machineM = machineM.addComment(comment);
 	}
 
@@ -60,12 +66,12 @@ public class MachineExtractor extends DepthFirstAdapter {
 	@Override
 	public void caseAEvent(final AEvent node) {
 		EventExtractor eE = new EventExtractor(new Event(node.getName()
-				.getText(), EventType.ORDINARY, false),
+				.getText(), EventType.ORDINARY, false), typeEnv,
 				getComment(node.getComments()));
 		node.apply(eE);
 
 		machineM = new MachineModifier(machineM.getMachine().addTo(
-				BEvent.class, eE.getEvent()));
+				BEvent.class, eE.getEvent()), typeEnv);
 	}
 
 	public String getComment(List<TComment> comments) {

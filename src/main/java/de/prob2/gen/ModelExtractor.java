@@ -1,7 +1,11 @@
 package de.prob2.gen;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 import com.google.common.base.Joiner;
 
@@ -13,6 +17,7 @@ import de.be4.eventbalg.core.parser.node.TIdentifierLiteral;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
@@ -20,9 +25,21 @@ import de.prob.model.representation.ModelElementList;
 public class ModelExtractor extends DepthFirstAdapter {
 
 	private EventBModel model;
+	private Set<IFormulaExtension> typeEnv;
 
 	public ModelExtractor(final EventBModel model) {
 		this.model = model;
+		this.typeEnv = extractTypeEnvironment(model);
+	}
+
+	private Set<IFormulaExtension> extractTypeEnvironment(EventBModel model) {
+		Set<IFormulaExtension> typeEnv = new HashSet<IFormulaExtension>();
+		ModelElementList<Theory> theories = model
+				.getChildrenOfType(Theory.class);
+		for (Theory theory : theories) {
+			typeEnv.addAll(theory.getTypeEnvironment());
+		}
+		return typeEnv;
 	}
 
 	public EventBModel getModel() {
@@ -47,7 +64,7 @@ public class ModelExtractor extends DepthFirstAdapter {
 		}
 		machine = machine.set(Machine.class, refines);
 		machine = machine.set(Context.class, seen);
-		MachineExtractor mE = new MachineExtractor(machine,
+		MachineExtractor mE = new MachineExtractor(machine, typeEnv,
 				getComment(node.getComments()));
 		node.apply(mE);
 		model = model.addMachine(mE.getMachine());
@@ -65,7 +82,7 @@ public class ModelExtractor extends DepthFirstAdapter {
 			model = model.addRelationship(name, cName, ERefType.EXTENDS);
 		}
 		context = context.set(Context.class, extended);
-		ContextExtractor cE = new ContextExtractor(context,
+		ContextExtractor cE = new ContextExtractor(context, typeEnv,
 				getComment(node.getComments()));
 		node.apply(cE);
 		model = model.addContext(cE.getContext());
