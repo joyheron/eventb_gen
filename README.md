@@ -1,18 +1,25 @@
-# Template for tools that use ProB 2.0
+# Generate Event-B Projects using the ProB 2.0 API
 
-This template can be used to build new tools that use ProB 2.0 as a library.
-It uses gradle (http://www.gradle.org/) as its build tool, but it can also be adapted to use Maven, Ant+Ivy or any other build tool that supports dependency resolution for Maven artifacts.  
+This library provides an interface to generate Event-B projects from text machine and context descriptions. 
+The format for the machine and context descriptions is determined by the eventbalg parser available from the [ProB Parsers](https://github.com/bendisposto/probparsers).
+This is the structural Event-B parser currently used for the Camille text editor which is extended to provide support for algorithm descriptions.
 
-To run the example use: gradle run
+The build tool gradle (http://www.gradle.org/) is required in order to set up the project so that it can be run from within Eclipse.
 
-If you don't have gradle installed, you can use ./gradlew run
+In order to setup the eclipse project run: gradle eclipse (or ./gradlew eclipse if you do not have grade installed)
 
-Note: This is only to try it out. Typically you will use the build task to produce a jar file.
+### Use the following arguments to run the application:
+* **path** *path/to/directory* - This argument is required. The application locates the directory on the local file system and attempts to parse and load all .emch and .ctx files in the specified directory
+* **name** *name* - This argument specifies the name of the generated Event-B project. If not specified, a generic name for the project will be chosen (i.e. *modelgen*)
+* **debug** - If this flag is set, debug information about the model will be printed
+
+### Example model
+An example model can be found in the directory models/gcd/.
+Machine description files are expected to have a .emch file extension.
+Context description files are expected to have a .ctx file extension.
+Files that contain incorrect Event-B models will result in exceptions.
 
 # ProB 2.0 source code
 The source code of the current ProB 2.0 development is located at http://github.com/bendisposto/prob2
 
-# Bugs
-Please report bugs and feature requests at https://probjira.atlassian.net
-
-(c) 2014 Jens Bendisposto et.al. , all rights reserved
+(c) 2014 Joy Clark et.al. , all rights reserved
