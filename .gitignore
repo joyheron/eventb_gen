@@ -7,3 +7,4 @@ prob_log.txt
 build
 *.log
 /models/gcd/GCD/**
+/models/sequences/UseSeqs/**
