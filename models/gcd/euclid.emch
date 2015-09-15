@@ -4,6 +4,7 @@ variables u v
 invariants
   @inv u : 0..k
   @inv2 v : 0..k
+  @loop GCD[{m↦n}] = GCD[{u↦v}]
 
 events
   event INITIALISATION
@@ -18,11 +19,9 @@ algorithm
     if: u < v then
       @u u := v ;
       @v v := u
-    end ;
-    assert: v > u ;
-    @uu u := u - v
+    end 
   end ;
-  assert: u|->m|->n : IsGCD
+  assert: m↦n↦v ∈ GCD
 end
 
 end

@@ -6,6 +6,6 @@ axioms
   @axm m : 1..k
   @axm2 n : 1..k
   @axm3 k = 100
-	@axm4 m = 50
-	@axm5 n = 20
+  @axm4 m = 50
+  @axm5 n = 20
 end
