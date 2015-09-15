@@ -8,7 +8,6 @@ import org.eventb.core.ast.extension.IFormulaExtension;
 
 import com.google.common.base.Joiner;
 
-import de.be4.eventbalg.core.parser.analysis.DepthFirstAdapter;
 import de.be4.eventbalg.core.parser.node.AAction;
 import de.be4.eventbalg.core.parser.node.AAnticipatedConvergence;
 import de.be4.eventbalg.core.parser.node.AConvergentConvergence;
@@ -22,17 +21,17 @@ import de.be4.eventbalg.core.parser.node.TComment;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Event.EventType;
 import de.prob.model.eventb.EventModifier;
+import de.prob.model.eventb.ModelGenerationException;
 import de.prob.model.representation.ModelElementList;
 
-public class EventExtractor extends DepthFirstAdapter {
+public class EventExtractor extends ElementExtractor {
 
 	private EventModifier eventM;
-	private Set<IFormulaExtension> typeEnv;
 	private boolean initialisation;
 
 	public EventExtractor(final Event event, Set<IFormulaExtension> typeEnv,
 			String comment) {
-		this.typeEnv = typeEnv;
+		super(typeEnv);
 		initialisation = event.getName() == "INITIALISATION";
 		eventM = new EventModifier(event, initialisation, typeEnv);
 		eventM = eventM.addComment(comment);
@@ -44,32 +43,52 @@ public class EventExtractor extends DepthFirstAdapter {
 
 	@Override
 	public void caseAParameter(final AParameter node) {
-		eventM = eventM.parameter(node.getName().getText(),
-				getComment(node.getComments()));
+		try {
+			eventM = eventM.parameter(node.getName().getText(),
+					getComment(node.getComments()));
+		} catch (ModelGenerationException e) {
+			handleException(e, node);
+		}
 	}
 
 	@Override
 	public void caseAGuard(final AGuard node) {
-		eventM = eventM.guard(node.getName().getText(), node.getPredicate()
-				.getText(), false, getComment(node.getComments()));
+		try {
+			eventM = eventM.guard(node.getName().getText(), node.getPredicate()
+					.getText(), false, getComment(node.getComments()));
+		} catch (ModelGenerationException e) {
+			handleException(e, node);
+		}
 	}
 
 	@Override
 	public void caseADerivedGuard(final ADerivedGuard node) {
-		eventM = eventM.guard(node.getName().getText(), node.getPredicate()
-				.getText(), true, getComment(node.getComments()));
+		try {
+			eventM = eventM.guard(node.getName().getText(), node.getPredicate()
+					.getText(), true, getComment(node.getComments()));
+		} catch (ModelGenerationException e) {
+			handleException(e, node);
+		}
 	}
 
 	@Override
 	public void caseAAction(final AAction node) {
-		eventM = eventM.action(node.getName().getText(), node.getAction()
-				.getText(), getComment(node.getComments()));
+		try {
+			eventM = eventM.action(node.getName().getText(), node.getAction()
+					.getText(), getComment(node.getComments()));
+		} catch (ModelGenerationException e) {
+			handleException(e, node);
+		}
 	}
 
 	@Override
 	public void caseAWitness(final AWitness node) {
-		eventM = eventM.witness(node.getName().getText(), node.getPredicate()
-				.getText(), getComment(node.getComments()));
+		try {
+			eventM = eventM.witness(node.getName().getText(), node
+					.getPredicate().getText(), getComment(node.getComments()));
+		} catch (ModelGenerationException e) {
+			handleException(e, node);
+		}
 	}
 
 	@Override

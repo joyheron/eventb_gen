@@ -9,7 +9,6 @@ import org.eventb.core.ast.extension.IFormulaExtension;
 
 import com.google.common.base.Joiner;
 
-import de.be4.eventbalg.core.parser.analysis.DepthFirstAdapter;
 import de.be4.eventbalg.core.parser.node.AContextParseUnit;
 import de.be4.eventbalg.core.parser.node.AMachineParseUnit;
 import de.be4.eventbalg.core.parser.node.TComment;
@@ -22,17 +21,17 @@ import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 
-public class ModelExtractor extends DepthFirstAdapter {
+public class ModelExtractor extends ElementExtractor {
 
 	private EventBModel model;
-	private Set<IFormulaExtension> typeEnv;
 
 	public ModelExtractor(final EventBModel model) {
+		super(extractTypeEnvironment(model));
 		this.model = model;
-		this.typeEnv = extractTypeEnvironment(model);
 	}
 
-	private Set<IFormulaExtension> extractTypeEnvironment(EventBModel model) {
+	private static Set<IFormulaExtension> extractTypeEnvironment(
+			EventBModel model) {
 		Set<IFormulaExtension> typeEnv = new HashSet<IFormulaExtension>();
 		ModelElementList<Theory> theories = model
 				.getChildrenOfType(Theory.class);
