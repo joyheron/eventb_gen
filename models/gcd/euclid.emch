@@ -14,11 +14,13 @@ events
   end
 
 algorithm
-  while: u /= 0
+  while: u /= 0 
+  	variant u + v
   do
     if: u < v then
-      @u u := v ;
-      @v v := u
+      @v v := v - u 
+    else
+      @u u := u - v 
     end 
   end ;
   assert: m↦n↦v ∈ GCD

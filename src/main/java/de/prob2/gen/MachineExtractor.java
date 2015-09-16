@@ -20,6 +20,8 @@ import de.prob.model.eventb.Event.EventType;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.MachineModifier;
 import de.prob.model.eventb.ModelGenerationException;
+import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter;
+import de.prob.model.eventb.algorithm.Block;
 import de.prob.model.representation.BEvent;
 
 public class MachineExtractor extends ElementExtractor {
@@ -52,7 +54,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), false, getComment(node
-					.getComments()));
+							.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -63,7 +65,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), true, getComment(node
-					.getComments()));
+							.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -92,7 +94,10 @@ public class MachineExtractor extends ElementExtractor {
 
 	@Override
 	public void caseAAlgorithm(AAlgorithm node) {
-
+		AlgorithmExtractor aE = new AlgorithmExtractor(typeEnv);
+		Block algorithm = aE.extract(node);
+		machineM = new MachineModifier(machineM.getMachine().addTo(Block.class,
+				algorithm), typeEnv);
 	}
 
 	public String getComment(List<TComment> comments) {

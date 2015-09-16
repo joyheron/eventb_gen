@@ -67,14 +67,6 @@ public class ModelGenerator {
 
 		}
 		this.model = model;
-		if (debug) {
-			System.out.println("writing to Rodin");
-		}
-		new ModelToXML().writeToRodin(model, projectName, path);
-
-		System.out.println("Rodin project written to: " + path + projectName
-				+ File.separator);
-
 	}
 
 	@SuppressWarnings("unchecked")
