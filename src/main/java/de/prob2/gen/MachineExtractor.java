@@ -29,7 +29,7 @@ public class MachineExtractor extends ElementExtractor {
 	MachineModifier machineM;
 
 	public MachineExtractor(final EventBMachine machine,
-			Set<IFormulaExtension> typeEnv, String comment) {
+			final Set<IFormulaExtension> typeEnv, final String comment) {
 		super(typeEnv);
 		machineM = new MachineModifier(machine, typeEnv);
 		machineM = machineM.addComment(comment);
@@ -54,7 +54,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), false, getComment(node
-							.getComments()));
+					.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -65,7 +65,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), true, getComment(node
-							.getComments()));
+					.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -93,14 +93,19 @@ public class MachineExtractor extends ElementExtractor {
 	}
 
 	@Override
-	public void caseAAlgorithm(AAlgorithm node) {
+	public void caseAAlgorithm(final AAlgorithm node) {
 		AlgorithmExtractor aE = new AlgorithmExtractor(typeEnv);
 		Block algorithm = aE.extract(node);
+		if (Main.debug) {
+			System.out.println("Algorithm Generated:");
+			System.out.println(new AlgorithmPrettyPrinter(algorithm)
+					.prettyPrint());
+		}
 		machineM = new MachineModifier(machineM.getMachine().addTo(Block.class,
 				algorithm), typeEnv);
 	}
 
-	public String getComment(List<TComment> comments) {
+	public String getComment(final List<TComment> comments) {
 		List<String> cmts = new ArrayList<String>();
 		for (TComment tComment : comments) {
 			cmts.add(tComment.getText());

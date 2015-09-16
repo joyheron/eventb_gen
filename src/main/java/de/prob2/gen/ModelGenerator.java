@@ -21,14 +21,13 @@ import de.be4.eventbalg.core.parser.node.Start;
 import de.prob.Main;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.ModelModifier;
-import de.prob.model.eventb.translate.ModelToXML;
 import de.prob.scripting.StateSpaceProvider;
 
 public class ModelGenerator {
 
 	private EventBModel model;
 
-	public ModelGenerator(String path, String projectName, boolean debug)
+	public ModelGenerator(final String path, final String projectName)
 			throws IOException, BException {
 		EventBModel model = new EventBModel(Main.getInjector().getInstance(
 				StateSpaceProvider.class));
@@ -39,7 +38,7 @@ public class ModelGenerator {
 		File[] files = file.listFiles(new FilenameFilter() {
 
 			@Override
-			public boolean accept(File dir, String name) {
+			public boolean accept(final File dir, final String name) {
 				String lowercaseName = name.toLowerCase();
 				if (lowercaseName.endsWith(".emch")
 						|| lowercaseName.endsWith(".ctx")) {
@@ -51,15 +50,15 @@ public class ModelGenerator {
 		});
 		for (File f : files) {
 			checkFile(f, false);
-			if (debug) {
+			if (de.prob2.gen.Main.debug) {
 				System.out.println("viewing file " + file.getAbsolutePath());
 			}
 			String text = readFile(f);
-			if (debug) {
+			if (de.prob2.gen.Main.debug) {
 				System.out.println("extracting file " + file.getAbsolutePath());
 			}
 			model = addComponent(model, text);
-			if (debug) {
+			if (de.prob2.gen.Main.debug) {
 				System.out.println("file extraction sucessful for "
 						+ file.getAbsolutePath());
 				System.out.println("Model is now: " + model.toString());
@@ -70,8 +69,8 @@ public class ModelGenerator {
 	}
 
 	@SuppressWarnings("unchecked")
-	private EventBModel extractTheories(EventBModel model, String path)
-			throws IOException {
+	private EventBModel extractTheories(final EventBModel model,
+			final String path) throws IOException {
 		File theoryPath = new File(path + File.separator + "TheoryPath.json");
 		if (!theoryPath.exists()) {
 			return model;
@@ -94,7 +93,7 @@ public class ModelGenerator {
 		return mm.getModel();
 	}
 
-	public String readFile(File file) throws IOException {
+	public String readFile(final File file) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		try {
 			StringBuilder sb = new StringBuilder();
@@ -111,7 +110,8 @@ public class ModelGenerator {
 		}
 	}
 
-	public void checkFile(File file, boolean directory) throws IOException {
+	public void checkFile(final File file, final boolean directory)
+			throws IOException {
 		if (!file.exists()) {
 			throw new FileNotFoundException(file.getAbsolutePath());
 		} else if (file.isDirectory() != directory) {
@@ -126,7 +126,7 @@ public class ModelGenerator {
 		return model;
 	}
 
-	public EventBModel addComponent(EventBModel model,
+	public EventBModel addComponent(final EventBModel model,
 			final String componentDesc) throws BException {
 		EventBParser parser = new EventBParser();
 		Start ast = parser.parse(componentDesc, false);

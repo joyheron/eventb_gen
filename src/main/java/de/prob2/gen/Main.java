@@ -27,6 +27,8 @@ public class Main {
 	public final static String NAIVE = "naive";
 	public final static String TERMINATION = "termination";
 
+	public static boolean debug = false;
+
 	/**
 	 * @param args
 	 */
@@ -39,14 +41,12 @@ public class Main {
 			if (line.hasOption(NAME)) {
 				name = line.getOptionValue(NAME);
 			}
-			boolean debug = false;
 			if (line.hasOption(DEBUG)) {
 				debug = true;
 			}
 
 			String path = line.getOptionValue(PATH);
-			EventBModel model = new ModelGenerator(path, name, debug)
-			.getModel();
+			EventBModel model = new ModelGenerator(path, name).getModel();
 
 			if (line.hasOption(GENERATE)) {
 				if (debug) {
@@ -56,7 +56,7 @@ public class Main {
 			} else if (line.hasOption(NAIVE)) {
 				if (debug) {
 					System.out
-					.println("running naive model generation algorithm");
+							.println("running naive model generation algorithm");
 				}
 				model = new NaiveAlgorithmTranslator(model).run();
 				if (line.hasOption(TERMINATION)) {
@@ -93,7 +93,7 @@ public class Main {
 				.hasArg()
 				.withDescription(
 						"specify the directory which contains the model description files (.emch for machines, .ctx for contexts)")
-						.create(PATH);
+				.create(PATH);
 
 		Option name = OptionBuilder.withArgName("name").hasArg()
 				.withDescription("specify the name for the generated project")
