@@ -22,7 +22,7 @@ Machine description files are expected to have a .emch file extension.
 Context description files are expected to have a .ctx file extension.
 Files that contain incorrect Event-B models will result in exceptions.
 
-To generate an algorithm from the example, the arguments would be:
+To generate an algorithm from the example, run de.prob2.gen.Main with the following arguments:
 ```
 -name GCD -path models/gcd/ -generate
 ```
