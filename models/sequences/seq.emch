@@ -1,0 +1,26 @@
+machine UseSeq
+  
+variables s x
+invariants
+  @inv s : seq(INT)
+  @inv2 x : NAT
+  @inv3 seqSize(s) = x
+
+events
+  event INITIALISATION
+    then
+      @act s:=emptySeq
+      @act2 x:=0
+  end
+  
+algorithm
+	while: x < 10
+	  variant 10 - x
+	do
+		@act s := seqAppend(s,x) ;
+		@act2 x := x + 1
+	end
+end
+ 
+
+end

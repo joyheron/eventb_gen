@@ -1,0 +1,14 @@
+context definitions
+
+constants Divides GCD
+
+axioms
+  @axm Divides = {i↦j ∣ ∃k·k∈0‥j ∧ j = i∗k}
+  @axm2 GCD = {x↦y↦res ∣ res↦x ∈ Divides ∧ res↦y ∈ Divides ∧ (∀r· r ∈ (0‥x ∪ 0‥y) ⇒ (r↦x ∈ Divides ∧ r↦y ∈ Divides ⇒ r↦res ∈ Divides) ) }
+  @axm3 ∀x,y·x↦x↦y ∈ GCD ⇒ x = y
+  @axm4 ∀v·GCD[{v↦v}] = {v}
+  @axm5 ∀x,y·y−x>0 ⇒ GCD[{x↦y}] = GCD[{x↦y−x}]
+  @axm6 ∀x,y·GCD[{x↦y}] = GCD[{y↦x}]
+
+  
+end

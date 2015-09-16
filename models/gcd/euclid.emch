@@ -1,0 +1,29 @@
+machine euclid
+  sees definitions limits
+variables u v
+invariants
+  @inv u : 0..k
+  @inv2 v : 0..k
+  @loop GCD[{m↦n}] = GCD[{u↦v}]
+
+events
+  event INITIALISATION
+    then
+      @act u:=m
+      @act2 v:=n
+  end
+
+algorithm
+  while: u /= 0 
+  	variant u + v
+  do
+    if: u < v then
+      @v v := v - u 
+    else
+      @u u := u - v 
+    end 
+  end ;
+  assert: m↦n↦v ∈ GCD
+end
+
+end
