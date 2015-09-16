@@ -22,6 +22,11 @@ Machine description files are expected to have a .emch file extension.
 Context description files are expected to have a .ctx file extension.
 Files that contain incorrect Event-B models will result in exceptions.
 
+To generate an algorithm from the example, the arguments would be:
+```
+-name GCD -path models/gcd/ -generate
+```
+
 # ProB 2.0 source code
 The source code of the current ProB 2.0 development is located at http://github.com/bendisposto/prob2
 
