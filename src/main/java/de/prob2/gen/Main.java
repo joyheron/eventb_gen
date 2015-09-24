@@ -2,6 +2,8 @@ package de.prob2.gen;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -15,8 +17,11 @@ import org.apache.commons.cli.PosixParser;
 import de.be4.eventbalg.core.parser.BException;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.algorithm.AlgorithmTranslator;
-import de.prob.model.eventb.algorithm.NaiveAlgorithmTranslator;
 import de.prob.model.eventb.algorithm.NaiveTerminationAnalysis;
+import de.prob.model.eventb.algorithm.graph.GraphMerge;
+import de.prob.model.eventb.algorithm.graph.IGraphTransformer;
+import de.prob.model.eventb.algorithm.graph.NaiveGenerationAlgorithm;
+import de.prob.model.eventb.algorithm.graph.OptimizedGenerationAlgorithm;
 import de.prob.model.eventb.translate.ModelToXML;
 
 public class Main {
@@ -25,6 +30,7 @@ public class Main {
 	public final static String PATH = "path";
 	public final static String GENERATE = "generate";
 	public final static String NAIVE = "naive";
+	public final static String MERGE = "mergeBranches";
 	public final static String TERMINATION = "termination";
 
 	public static boolean debug = false;
@@ -48,17 +54,30 @@ public class Main {
 			String path = line.getOptionValue(PATH);
 			EventBModel model = new ModelGenerator(path, name).getModel();
 
+			List<IGraphTransformer> transformers = new ArrayList<IGraphTransformer>();
+			if (line.hasOption(MERGE)) {
+				transformers.add(new GraphMerge());
+			}
+
 			if (line.hasOption(GENERATE)) {
 				if (debug) {
 					System.out.println("running model generation algorithm");
 				}
-				model = new AlgorithmTranslator(model).run();
+				model = new AlgorithmTranslator(model,
+						new OptimizedGenerationAlgorithm(transformers)).run();
+				if (line.hasOption(TERMINATION)) {
+					if (debug) {
+						System.out.println("running termination analysis");
+					}
+					model = new NaiveTerminationAnalysis(model).run();
+				}
 			} else if (line.hasOption(NAIVE)) {
 				if (debug) {
 					System.out
-							.println("running naive model generation algorithm");
+					.println("running naive model generation algorithm");
 				}
-				model = new NaiveAlgorithmTranslator(model).run();
+				model = new AlgorithmTranslator(model,
+						new NaiveGenerationAlgorithm(transformers)).run();
 				if (line.hasOption(TERMINATION)) {
 					if (debug) {
 						System.out.println("running termination analysis");
@@ -66,6 +85,7 @@ public class Main {
 					model = new NaiveTerminationAnalysis(model).run();
 				}
 			}
+
 			if (debug) {
 				System.out.println("writing to Rodin");
 			}
@@ -93,7 +113,7 @@ public class Main {
 				.hasArg()
 				.withDescription(
 						"specify the directory which contains the model description files (.emch for machines, .ctx for contexts)")
-				.create(PATH);
+						.create(PATH);
 
 		Option name = OptionBuilder.withArgName("name").hasArg()
 				.withDescription("specify the name for the generated project")
@@ -109,6 +129,10 @@ public class Main {
 				NAIVE,
 				"naive algorithm for the generate of Event-B models based an algorithm description");
 
+		Option merge = new Option(
+				MERGE,
+				"merge branches within the control flow graph during algorithm translation in order to optimize the result");
+
 		Option termination = new Option(
 				TERMINATION,
 				"use in connection with 'naive' algorithm to generate specifications including a framework to help with termination proofs");
@@ -121,6 +145,7 @@ public class Main {
 		options.addOption(debug);
 		options.addOption(generate);
 		options.addOption(naive);
+		options.addOption(merge);
 		options.addOption(termination);
 		return options;
 	}
