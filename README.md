@@ -14,6 +14,7 @@ In order to setup the eclipse project run: gradle eclipse (or ./gradlew eclipse 
 * **debug** - If this flag is set, debug information about the model will be printed
 * **generate** - run an algorithm to generate Event-B models based on an algorithm description
 * **naive** - naive algorithm for the generate of Event-B models based an algorithm description
+* **mergeBranches** - merge branches within the control flow graph during algorithm translation in order to optimize the result
 * **termination** - use in connection with 'naive' algorithm to generate specifications including a framework to help with termination proofs
 
 ### Example model
