@@ -4,7 +4,6 @@ variables u v
 invariants
   @inv u : 0..k
   @inv2 v : 0..k
-  @loop GCD[{m↦n}] = GCD[{u↦v}]
 
 events
   event INITIALISATION
@@ -15,6 +14,7 @@ events
 
 algorithm
   while: u /= 0 
+    invariant GCD[{m↦n}] = GCD[{u↦v}]
   	variant u + v
   do
     if: u < v then
