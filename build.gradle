@@ -22,3 +22,18 @@ task run(type:JavaExec) {
    args = ["-script", "scripts/"]
    classpath = sourceSets.main.runtimeClasspath
 }
+
+task uberjar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
+    from files(sourceSets.main.output.classesDir)
+    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+
+    manifest {
+        attributes 'Main-Class': 'de.prob2.gen.Main'
+    }
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": 'de.prob2.gen.Main'
+    }
+}
