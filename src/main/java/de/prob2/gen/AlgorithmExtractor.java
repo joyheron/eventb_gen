@@ -10,8 +10,10 @@ import de.be4.eventbalg.core.parser.node.AAlgorithm;
 import de.be4.eventbalg.core.parser.node.AAssertStmt;
 import de.be4.eventbalg.core.parser.node.AAssignStmt;
 import de.be4.eventbalg.core.parser.node.AIfStmt;
+import de.be4.eventbalg.core.parser.node.ALoopInvariant;
 import de.be4.eventbalg.core.parser.node.ALoopVariant;
 import de.be4.eventbalg.core.parser.node.AWhileStmt;
+import de.be4.eventbalg.core.parser.node.PLoopInvariant;
 import de.be4.eventbalg.core.parser.node.PLoopVariant;
 import de.be4.eventbalg.core.parser.node.PStmt;
 import de.prob.model.eventb.ModelGenerationException;
@@ -20,16 +22,16 @@ import de.prob.model.eventb.algorithm.Statement;
 
 public class AlgorithmExtractor extends ElementExtractor {
 
-	public AlgorithmExtractor(Set<IFormulaExtension> typeEnv) {
+	public AlgorithmExtractor(final Set<IFormulaExtension> typeEnv) {
 		super(typeEnv);
 	}
 
-	public Block extract(AAlgorithm node) {
+	public Block extract(final AAlgorithm node) {
 		LinkedList<PStmt> block = node.getBlock();
 		return extractStmts(block);
 	}
 
-	private Block extractStmts(LinkedList<PStmt> block) {
+	private Block extractStmts(final LinkedList<PStmt> block) {
 		Block b = new Block(new ArrayList<Statement>(), typeEnv);
 		for (PStmt pStmt : block) {
 			b = extractStmt(b, pStmt);
@@ -37,12 +39,13 @@ public class AlgorithmExtractor extends ElementExtractor {
 		return b;
 	}
 
-	private Block extractStmt(Block b, PStmt pStmt) {
+	private Block extractStmt(final Block b, final PStmt pStmt) {
 		if (pStmt instanceof AWhileStmt) {
 			AWhileStmt whileStmt = (AWhileStmt) pStmt;
 			try {
 				return b.While(whileStmt.getCondition().getText(),
 						extractStmts(whileStmt.getStatements()),
+						extractInvariant(b, whileStmt.getInvariant()),
 						extractVariant(b, whileStmt.getVariant()));
 			} catch (ModelGenerationException e) {
 				handleException(e, whileStmt);
@@ -76,12 +79,26 @@ public class AlgorithmExtractor extends ElementExtractor {
 		return null;
 	}
 
-	private String extractVariant(Block b, PLoopVariant variant) {
+	private String extractVariant(final Block b, final PLoopVariant variant) {
 		if (variant instanceof ALoopVariant) {
 			try {
 				String text = ((ALoopVariant) variant).getExpression()
 						.getText();
 				b.parseExpression(text);
+				return text;
+			} catch (ModelGenerationException e) {
+				handleException(e, variant);
+			}
+		}
+		return null;
+	}
+
+	private String extractInvariant(final Block b, final PLoopInvariant variant) {
+		if (variant instanceof ALoopInvariant) {
+			try {
+				String text = ((ALoopInvariant) variant).getPredicate()
+						.getText();
+				b.parsePredicate(text);
 				return text;
 			} catch (ModelGenerationException e) {
 				handleException(e, variant);
