@@ -8,3 +8,4 @@ build
 *.log
 /models/gcd/GCD/**
 /models/sequences/UseSeqs/**
+/models/bowl/BowlOfCherries/**

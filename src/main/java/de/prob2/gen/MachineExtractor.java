@@ -14,6 +14,7 @@ import de.be4.eventbalg.core.parser.node.AEvent;
 import de.be4.eventbalg.core.parser.node.AInvariant;
 import de.be4.eventbalg.core.parser.node.AVariable;
 import de.be4.eventbalg.core.parser.node.AVariant;
+import de.be4.eventbalg.core.parser.node.PEventRefinement;
 import de.be4.eventbalg.core.parser.node.TComment;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Event.EventType;
@@ -54,7 +55,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), false, getComment(node
-					.getComments()));
+							.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -65,7 +66,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), true, getComment(node
-					.getComments()));
+							.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -84,8 +85,9 @@ public class MachineExtractor extends ElementExtractor {
 	@Override
 	public void caseAEvent(final AEvent node) {
 		EventExtractor eE = new EventExtractor(new Event(node.getName()
-				.getText(), EventType.ORDINARY, false), typeEnv,
-				getComment(node.getComments()));
+				.getText(), EventType.ORDINARY, false), machineM.getMachine()
+				.getRefines(), typeEnv, getComment(node.getComments()));
+
 		node.apply(eE);
 
 		machineM = new MachineModifier(machineM.getMachine().addTo(
@@ -99,7 +101,7 @@ public class MachineExtractor extends ElementExtractor {
 		if (Main.debug) {
 			System.out.println("Algorithm Generated:");
 			System.out.println(new AlgorithmPrettyPrinter(algorithm)
-					.prettyPrint());
+			.prettyPrint());
 		}
 		machineM = new MachineModifier(machineM.getMachine().addTo(Block.class,
 				algorithm), typeEnv);

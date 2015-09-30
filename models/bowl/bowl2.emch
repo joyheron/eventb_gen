@@ -1,0 +1,45 @@
+machine bowl2
+refines bowl1
+sees cherries
+
+variables bowl
+invariants
+  @inv bowl <: cherries
+  @inv2 card(bowl) <= 10
+  @gluing size = card(bowl)
+
+events
+  event INITIALISATION
+    then
+      @act bowl := {}
+  end
+  
+  event put
+    refines put
+  	any handfull
+  	where
+  		@grd handfull <: cherries
+  		@grd2 handfull /\ bowl = {}
+  		@grd3 card(handfull) : 1..5
+  		@grd4 card(handfull) + card(bowl) <= 10
+  	with
+  		@x card(handfull) = x
+  	then
+  		@act bowl := bowl \/ handfull
+  end
+  
+  event take
+    refines take
+  	any handfull
+  	where
+  		@grd handfull <: bowl
+  		@grd2 card(handfull) : 1..5
+  		@grd3 card(bowl) - card(handfull) >= 0
+  	with
+  		@x card(handfull) = x
+  	then
+  		@act bowl := bowl \ handfull
+  end
+ 
+
+end

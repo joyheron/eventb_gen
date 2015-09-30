@@ -16,22 +16,28 @@ import de.be4.eventbalg.core.parser.node.AExtendedEventRefinement;
 import de.be4.eventbalg.core.parser.node.AGuard;
 import de.be4.eventbalg.core.parser.node.AOrdinaryConvergence;
 import de.be4.eventbalg.core.parser.node.AParameter;
+import de.be4.eventbalg.core.parser.node.ARefinesEventRefinement;
 import de.be4.eventbalg.core.parser.node.AWitness;
 import de.be4.eventbalg.core.parser.node.TComment;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Event.EventType;
+import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventModifier;
 import de.prob.model.eventb.ModelGenerationException;
+import de.prob.model.representation.ElementComment;
 import de.prob.model.representation.ModelElementList;
 
 public class EventExtractor extends ElementExtractor {
 
 	private EventModifier eventM;
 	private boolean initialisation;
+	private ModelElementList<EventBMachine> machineRefines;
 
-	public EventExtractor(final Event event, Set<IFormulaExtension> typeEnv,
-			String comment) {
+	public EventExtractor(final Event event,
+			ModelElementList<EventBMachine> machineRefines,
+			Set<IFormulaExtension> typeEnv, String comment) {
 		super(typeEnv);
+		this.machineRefines = machineRefines;
 		initialisation = event.getName() == "INITIALISATION";
 		eventM = new EventModifier(event, initialisation, typeEnv);
 		eventM = eventM.addComment(comment);
@@ -92,12 +98,37 @@ public class EventExtractor extends ElementExtractor {
 	}
 
 	@Override
+	public void caseARefinesEventRefinement(ARefinesEventRefinement node) {
+		if (machineRefines.isEmpty()) {
+			throw new IllegalArgumentException(
+					"Could not find machine refinement although event is marked as a refinement");
+		}
+		if (node.getNames().size() != 1) {
+			throw new IllegalArgumentException(
+					"The API currently only supports single refinement for events");
+		}
+		String name = node.getNames().get(0).getText();
+		Event event = machineRefines.get(0).getEvent(name);
+		if (event == null) {
+			throw new IllegalArgumentException(
+					"Could not find refined event with name " + name);
+		}
+		eventM = eventM.refines(event, false);
+	}
+
+	@Override
 	public void caseAExtendedEventRefinement(final AExtendedEventRefinement node) {
-		ModelElementList<Event> list = new ModelElementList<Event>();
-		Event e = new Event(node.getName().getText(), EventType.ORDINARY, false);
-		list = list.addElement(e);
-		eventM = new EventModifier(eventM.getEvent().set(Event.class, list),
-				initialisation, typeEnv);
+		if (machineRefines.isEmpty()) {
+			throw new IllegalArgumentException(
+					"Could not find machine refinement although event is marked as a refinement");
+		}
+		String name = node.getName().getText();
+		Event event = machineRefines.get(0).getEvent(name);
+		if (event == null) {
+			throw new IllegalArgumentException(
+					"Could not find refined event with name " + name);
+		}
+		eventM = eventM.refines(event, true);
 	}
 
 	@Override

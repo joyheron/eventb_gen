@@ -1,0 +1,33 @@
+machine bowl1
+  
+variables size
+invariants
+  @inv size : NAT
+  @inv2 size <= 10
+
+events
+  event INITIALISATION
+    then
+      @act size := 0
+  end
+  
+  event put
+  	any x
+  	where
+  		@grd x : 1..5
+  		@grd2 size + x <= 10
+  	then
+  		@act size := size + x
+  end
+  
+  event take
+  	any x
+  	where
+  		@grd x : 1..5
+  		@grd2 size - x >= 0
+  	then
+  		@act size := size - x
+  end
+ 
+
+end

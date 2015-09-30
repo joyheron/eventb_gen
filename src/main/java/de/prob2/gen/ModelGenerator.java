@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import de.be4.eventbalg.core.parser.node.Start;
 import de.prob.Main;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.ModelModifier;
+import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.scripting.StateSpaceProvider;
 
 public class ModelGenerator {
@@ -48,6 +50,7 @@ public class ModelGenerator {
 				}
 			}
 		});
+		Map<String, String> components = new HashMap<String, String>();
 		for (File f : files) {
 			checkFile(f, false);
 			if (de.prob2.gen.Main.debug) {
@@ -57,15 +60,9 @@ public class ModelGenerator {
 			if (de.prob2.gen.Main.debug) {
 				System.out.println("extracting file " + file.getAbsolutePath());
 			}
-			model = addComponent(model, text);
-			if (de.prob2.gen.Main.debug) {
-				System.out.println("file extraction sucessful for "
-						+ file.getAbsolutePath());
-				System.out.println("Model is now: " + model.toString());
-			}
-
+			components.put(f.getName(), text);
 		}
-		this.model = model;
+		this.model = addComponents(model, components);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -126,13 +123,77 @@ public class ModelGenerator {
 		return model;
 	}
 
-	public EventBModel addComponent(final EventBModel model,
-			final String componentDesc) throws BException {
+	private EventBModel addComponents(EventBModel model,
+			Map<String, String> components) throws BException {
+		for (Entry<String, String> e : components.entrySet()) {
+			String name = e.getKey();
+			if (name.endsWith(".emch")) {
+				name = name.substring(0, name.length() - 5);
+			} else if (name.endsWith(".ctx")) {
+				name = name.substring(0, name.length() - 4);
+			}
+			if (model.getComponent(name) == null) {
+				model = addComponent(model, name, e.getValue(), components);
+			}
+		}
+		return model;
+	}
+
+	private EventBModel addComponent(EventBModel model, String name,
+			String componentDesc, Map<String, String> components)
+			throws BException {
 		EventBParser parser = new EventBParser();
 		Start ast = parser.parse(componentDesc, false);
-		ModelExtractor modelE = new ModelExtractor(model);
+		ReferenceExtractor e = new ReferenceExtractor();
+		ast.apply(e);
+		if (e.isContext()) {
+			for (String s : e.getExtends()) {
+				String fileN = s + ".ctx";
+				if (model.getComponent(fileN) == null) {
+					if (components.get(fileN) == null) {
+						throw new IllegalArgumentException(
+								"no component description for context " + s);
+					}
+					model = addComponent(model, s, components.get(fileN),
+							components);
+					model = model.addRelationship(name, s, ERefType.EXTENDS);
+				}
+			}
+			model = addComponent(model, ast);
+		} else if (e.isMachine()) {
+			for (String s : e.getSees()) {
+				String fileN = s + ".ctx";
+				if (model.getComponent(fileN) == null) {
+					if (components.get(fileN) == null) {
+						throw new IllegalArgumentException(
+								"no component description for context " + s);
+					}
+					model = addComponent(model, s, components.get(fileN),
+							components);
+					model = model.addRelationship(name, s, ERefType.SEES);
+				}
+			}
+			for (String s : e.getRefines()) {
+				String fileN = s + ".emch";
+				if (model.getComponent(fileN) == null) {
+					if (components.get(fileN) == null) {
+						throw new IllegalArgumentException(
+								"no component description for machine " + s);
+					}
+					model = addComponent(model, s, components.get(fileN),
+							components);
+					model = model.addRelationship(name, s, ERefType.REFINES);
+				}
+			}
+			model = addComponent(model, ast);
+		}
+		return model;
+	}
+
+	public EventBModel addComponent(final EventBModel model, final Start ast)
+			throws BException {
+		ComponentExtractor modelE = new ComponentExtractor(model);
 		ast.apply(modelE);
 		return modelE.getModel();
 	}
-
 }

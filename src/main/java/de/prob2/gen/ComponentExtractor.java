@@ -17,15 +17,16 @@ import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.theory.Theory;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 
-public class ModelExtractor extends ElementExtractor {
+public class ComponentExtractor extends ElementExtractor {
 
 	private EventBModel model;
 
-	public ModelExtractor(final EventBModel model) {
+	public ComponentExtractor(final EventBModel model) {
 		super(extractTypeEnvironment(model));
 		this.model = model;
 	}
@@ -52,14 +53,27 @@ public class ModelExtractor extends ElementExtractor {
 		ModelElementList<Context> seen = new ModelElementList<Context>();
 		for (TIdentifierLiteral contextName : node.getSeenNames()) {
 			String cName = contextName.getText();
-			seen = seen.addElement(new Context(cName));
-			model = model.addRelationship(name, cName, ERefType.SEES);
+			AbstractElement context = model.getComponent(cName);
+			if (context instanceof Context) {
+				seen = seen.addElement((Context) context);
+			} else {
+				throw new IllegalArgumentException(
+						"Tried to find context with name " + cName
+						+ ", but found " + context + " instead.");
+			}
 		}
 		ModelElementList<EventBMachine> refines = new ModelElementList<EventBMachine>();
 		for (TIdentifierLiteral mchName : node.getRefinesNames()) {
 			String mName = mchName.getText();
-			refines = refines.addElement(new EventBMachine(mName));
-			model = model.addRelationship(name, mName, ERefType.REFINES);
+			AbstractElement m = model.getComponent(mName);
+			if (m instanceof EventBMachine) {
+				refines = refines.addElement((EventBMachine) m);
+			} else {
+				throw new IllegalArgumentException(
+						"Tried to find machine with name " + mName
+						+ ", but found " + m + " instead.");
+			}
+
 		}
 		machine = machine.set(Machine.class, refines);
 		machine = machine.set(Context.class, seen);
@@ -77,8 +91,14 @@ public class ModelExtractor extends ElementExtractor {
 		ModelElementList<Context> extended = new ModelElementList<Context>();
 		for (TIdentifierLiteral contextName : node.getExtendsNames()) {
 			String cName = contextName.getText();
-			extended = extended.addElement(new Context(cName));
-			model = model.addRelationship(name, cName, ERefType.EXTENDS);
+			AbstractElement c = model.getComponent(cName);
+			if (c instanceof Context) {
+				extended = extended.addElement((Context) c);
+			} else {
+				throw new IllegalArgumentException(
+						"Tried to find context with name " + cName
+						+ ", but found " + c + " instead.");
+			}
 		}
 		context = context.set(Context.class, extended);
 		ContextExtractor cE = new ContextExtractor(context, typeEnv,
