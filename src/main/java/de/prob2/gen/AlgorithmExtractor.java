@@ -9,6 +9,7 @@ import org.eventb.core.ast.extension.IFormulaExtension;
 import de.be4.eventbalg.core.parser.node.AAlgorithm;
 import de.be4.eventbalg.core.parser.node.AAssertStmt;
 import de.be4.eventbalg.core.parser.node.AAssignStmt;
+import de.be4.eventbalg.core.parser.node.AAssumeStmt;
 import de.be4.eventbalg.core.parser.node.AIfStmt;
 import de.be4.eventbalg.core.parser.node.ALoopInvariant;
 import de.be4.eventbalg.core.parser.node.ALoopVariant;
@@ -65,6 +66,13 @@ public class AlgorithmExtractor extends ElementExtractor {
 		if (pStmt instanceof AAssertStmt) {
 			try {
 				return b.Assert(((AAssertStmt) pStmt).getPredicate().getText());
+			} catch (ModelGenerationException e) {
+				handleException(e, pStmt);
+			}
+		}
+		if (pStmt instanceof AAssumeStmt) {
+			try {
+				return b.Assume(((AAssumeStmt) pStmt).getPredicate().getText());
 			} catch (ModelGenerationException e) {
 				handleException(e, pStmt);
 			}
