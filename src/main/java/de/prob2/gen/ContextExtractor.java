@@ -21,11 +21,10 @@ public class ContextExtractor extends ElementExtractor {
 
 	private ContextModifier contextM;
 
-	public ContextExtractor(final Context context,
-			Set<IFormulaExtension> typeEnv, String comment) {
+	public ContextExtractor(final ContextModifier contextM,
+			Set<IFormulaExtension> typeEnv) {
 		super(typeEnv);
-		contextM = new ContextModifier(context, typeEnv);
-		contextM = contextM.addComment(comment);
+		this.contextM = contextM;
 	}
 
 	public Context getContext() {
@@ -37,7 +36,7 @@ public class ContextExtractor extends ElementExtractor {
 		try {
 			contextM = contextM.axiom(node.getName().getText(), node
 					.getPredicate().getText(), false, getComment(node
-					.getComments()));
+							.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -48,7 +47,7 @@ public class ContextExtractor extends ElementExtractor {
 		try {
 			contextM = contextM.axiom(node.getName().getText(), node
 					.getPredicate().getText(), true, getComment(node
-					.getComments()));
+							.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}

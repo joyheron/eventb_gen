@@ -1,11 +1,7 @@
 package de.prob2.gen;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import org.eventb.core.ast.extension.IFormulaExtension;
 
 import com.google.common.base.Joiner;
 
@@ -14,97 +10,95 @@ import de.be4.eventbalg.core.parser.node.AMachineParseUnit;
 import de.be4.eventbalg.core.parser.node.TComment;
 import de.be4.eventbalg.core.parser.node.TIdentifierLiteral;
 import de.prob.model.eventb.Context;
+import de.prob.model.eventb.ContextModifier;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.eventb.theory.Theory;
+import de.prob.model.eventb.MachineModifier;
+import de.prob.model.eventb.ModelModifier;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.DependencyGraph.ERefType;
-import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 
 public class ComponentExtractor extends ElementExtractor {
 
-	private EventBModel model;
+	private ModelModifier modelM;
 
-	public ComponentExtractor(final EventBModel model) {
-		super(extractTypeEnvironment(model));
-		this.model = model;
-	}
-
-	private static Set<IFormulaExtension> extractTypeEnvironment(
-			EventBModel model) {
-		Set<IFormulaExtension> typeEnv = new HashSet<IFormulaExtension>();
-		ModelElementList<Theory> theories = model
-				.getChildrenOfType(Theory.class);
-		for (Theory theory : theories) {
-			typeEnv.addAll(theory.getTypeEnvironment());
-		}
-		return typeEnv;
+	public ComponentExtractor(final ModelModifier modelM) {
+		super(modelM.typeEnvironment);
+		this.modelM = modelM;
 	}
 
 	public EventBModel getModel() {
-		return model;
+		return modelM.getModel();
+	}
+
+	public ModelModifier getModelModifier() {
+		return modelM;
 	}
 
 	@Override
 	public void caseAMachineParseUnit(final AMachineParseUnit node) {
 		String name = node.getName().getText();
-		EventBMachine machine = new EventBMachine(name);
+		MachineModifier machineM = new MachineModifier(new EventBMachine(name),
+				typeEnv);
 		ModelElementList<Context> seen = new ModelElementList<Context>();
 		for (TIdentifierLiteral contextName : node.getSeenNames()) {
 			String cName = contextName.getText();
-			AbstractElement context = model.getComponent(cName);
-			if (context instanceof Context) {
-				seen = seen.addElement((Context) context);
-			} else {
+			AbstractElement context = modelM.getModel().getContext(cName);
+			if (context == null) {
 				throw new IllegalArgumentException(
 						"Tried to find context with name " + cName
-						+ ", but found " + context + " instead.");
-			}
-		}
-		ModelElementList<EventBMachine> refines = new ModelElementList<EventBMachine>();
-		for (TIdentifierLiteral mchName : node.getRefinesNames()) {
-			String mName = mchName.getText();
-			AbstractElement m = model.getComponent(mName);
-			if (m instanceof EventBMachine) {
-				refines = refines.addElement((EventBMachine) m);
-			} else {
-				throw new IllegalArgumentException(
-						"Tried to find machine with name " + mName
-						+ ", but found " + m + " instead.");
-			}
+						+ ", but could not find it.");
 
+			}
+			seen = seen.addElement((Context) context);
 		}
-		machine = machine.set(Machine.class, refines);
-		machine = machine.set(Context.class, seen);
-		MachineExtractor mE = new MachineExtractor(machine, typeEnv,
-				getComment(node.getComments()));
+		machineM = machineM.setSees(seen);
+		if (node.getRefinesNames().size() == 1) {
+			String mname = node.getRefinesNames().getFirst().getText();
+			EventBMachine machine = modelM.getModel().getMachine(mname);
+			if (machine == null) {
+				throw new IllegalArgumentException(
+						"Tried to find machine with name " + mname
+						+ ", but could not find it.");
+			}
+			machineM = machineM.setRefines(machine);
+		} else if (node.getRefinesNames().size() > 1) {
+			throw new IllegalArgumentException(
+					"Machines can only refine one abstract machine. Found "
+							+ node.getRefinesNames().size()
+							+ " refined machines");
+		}
+		machineM = machineM.addComment(getComment(node.getComments()));
+		MachineExtractor mE = new MachineExtractor(machineM, typeEnv);
 		node.apply(mE);
-		model = model.addMachine(mE.getMachine());
+		modelM = modelM.addMachine(mE.getMachine());
 
 	}
 
 	@Override
 	public void caseAContextParseUnit(final AContextParseUnit node) {
 		String name = node.getName().getText();
-		Context context = new Context(name);
-		ModelElementList<Context> extended = new ModelElementList<Context>();
-		for (TIdentifierLiteral contextName : node.getExtendsNames()) {
-			String cName = contextName.getText();
-			AbstractElement c = model.getComponent(cName);
-			if (c instanceof Context) {
-				extended = extended.addElement((Context) c);
-			} else {
+		ContextModifier contextM = new ContextModifier(new Context(name),
+				typeEnv);
+		if (node.getExtendsNames().size() == 1) {
+			String cName = node.getExtendsNames().getFirst().getText();
+			Context ctx = modelM.getModel().getContext(cName);
+			if (ctx == null) {
 				throw new IllegalArgumentException(
 						"Tried to find context with name " + cName
-						+ ", but found " + c + " instead.");
+						+ ", but could not find it.");
 			}
+			contextM.setExtends(ctx);
+		} else if (node.getExtendsNames().size() > 1) {
+			throw new IllegalArgumentException(
+					"Contexts can only refine one abstract context. Found "
+							+ node.getExtendsNames().size()
+							+ " extended machines");
 		}
-		context = context.set(Context.class, extended);
-		ContextExtractor cE = new ContextExtractor(context, typeEnv,
-				getComment(node.getComments()));
+		contextM = contextM.addComment(getComment(node.getComments()));
+		ContextExtractor cE = new ContextExtractor(contextM, typeEnv);
 		node.apply(cE);
-		model = model.addContext(cE.getContext());
+		modelM = modelM.addContext(cE.getContext());
 	}
 
 	public String getComment(List<TComment> comments) {

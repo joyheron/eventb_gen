@@ -14,7 +14,6 @@ import de.be4.eventbalg.core.parser.node.AEvent;
 import de.be4.eventbalg.core.parser.node.AInvariant;
 import de.be4.eventbalg.core.parser.node.AVariable;
 import de.be4.eventbalg.core.parser.node.AVariant;
-import de.be4.eventbalg.core.parser.node.PEventRefinement;
 import de.be4.eventbalg.core.parser.node.TComment;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Event.EventType;
@@ -29,11 +28,10 @@ public class MachineExtractor extends ElementExtractor {
 
 	MachineModifier machineM;
 
-	public MachineExtractor(final EventBMachine machine,
-			final Set<IFormulaExtension> typeEnv, final String comment) {
+	public MachineExtractor(final MachineModifier machineM,
+			final Set<IFormulaExtension> typeEnv) {
 		super(typeEnv);
-		machineM = new MachineModifier(machine, typeEnv);
-		machineM = machineM.addComment(comment);
+		this.machineM = machineM;
 	}
 
 	public EventBMachine getMachine() {

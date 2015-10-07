@@ -27,7 +27,7 @@ import de.prob.scripting.StateSpaceProvider;
 
 public class ModelGenerator {
 
-	private EventBModel model;
+	private ModelModifier modelM;
 
 	public ModelGenerator(final String path, final String projectName)
 			throws IOException, BException {
@@ -35,7 +35,7 @@ public class ModelGenerator {
 				StateSpaceProvider.class));
 		File file = new File(path);
 		checkFile(file, true);
-		model = extractTheories(model, path);
+		ModelModifier modelM = extractTheories(model, path);
 
 		File[] files = file.listFiles(new FilenameFilter() {
 
@@ -62,15 +62,15 @@ public class ModelGenerator {
 			}
 			components.put(f.getName(), text);
 		}
-		this.model = addComponents(model, components);
+		this.modelM = addComponents(modelM, components);
 	}
 
 	@SuppressWarnings("unchecked")
-	private EventBModel extractTheories(final EventBModel model,
+	private ModelModifier extractTheories(final EventBModel model,
 			final String path) throws IOException {
 		File theoryPath = new File(path + File.separator + "TheoryPath.json");
 		if (!theoryPath.exists()) {
-			return model;
+			return new ModelModifier(model);
 		}
 		ModelModifier mm = new ModelModifier(model);
 		String file = readFile(theoryPath);
@@ -87,7 +87,7 @@ public class ModelGenerator {
 			mm = mm.loadTheories(properties);
 		}
 
-		return mm.getModel();
+		return mm;
 	}
 
 	public String readFile(final File file) throws IOException {
@@ -120,10 +120,10 @@ public class ModelGenerator {
 	}
 
 	public EventBModel getModel() {
-		return model;
+		return modelM.getModel();
 	}
 
-	private EventBModel addComponents(EventBModel model,
+	private ModelModifier addComponents(ModelModifier modelM,
 			Map<String, String> components) throws BException {
 		for (Entry<String, String> e : components.entrySet()) {
 			String name = e.getKey();
@@ -132,16 +132,16 @@ public class ModelGenerator {
 			} else if (name.endsWith(".ctx")) {
 				name = name.substring(0, name.length() - 4);
 			}
-			if (model.getComponent(name) == null) {
-				model = addComponent(model, name, e.getValue(), components);
+			if (modelM.getModel().getComponent(name) == null) {
+				modelM = addComponent(modelM, name, e.getValue(), components);
 			}
 		}
-		return model;
+		return modelM;
 	}
 
-	private EventBModel addComponent(EventBModel model, String name,
+	private ModelModifier addComponent(ModelModifier modelM, String name,
 			String componentDesc, Map<String, String> components)
-			throws BException {
+					throws BException {
 		EventBParser parser = new EventBParser();
 		Start ast = parser.parse(componentDesc, false);
 		ReferenceExtractor e = new ReferenceExtractor();
@@ -149,51 +149,48 @@ public class ModelGenerator {
 		if (e.isContext()) {
 			for (String s : e.getExtends()) {
 				String fileN = s + ".ctx";
-				if (model.getComponent(fileN) == null) {
+				if (modelM.getModel().getComponent(fileN) == null) {
 					if (components.get(fileN) == null) {
 						throw new IllegalArgumentException(
 								"no component description for context " + s);
 					}
-					model = addComponent(model, s, components.get(fileN),
+					modelM = addComponent(modelM, s, components.get(fileN),
 							components);
-					model = model.addRelationship(name, s, ERefType.EXTENDS);
 				}
 			}
-			model = addComponent(model, ast);
+			modelM = addComponent(modelM, ast);
 		} else if (e.isMachine()) {
 			for (String s : e.getSees()) {
 				String fileN = s + ".ctx";
-				if (model.getComponent(fileN) == null) {
+				if (modelM.getModel().getComponent(fileN) == null) {
 					if (components.get(fileN) == null) {
 						throw new IllegalArgumentException(
 								"no component description for context " + s);
 					}
-					model = addComponent(model, s, components.get(fileN),
+					modelM = addComponent(modelM, s, components.get(fileN),
 							components);
-					model = model.addRelationship(name, s, ERefType.SEES);
 				}
 			}
 			for (String s : e.getRefines()) {
 				String fileN = s + ".emch";
-				if (model.getComponent(fileN) == null) {
+				if (modelM.getModel().getComponent(fileN) == null) {
 					if (components.get(fileN) == null) {
 						throw new IllegalArgumentException(
 								"no component description for machine " + s);
 					}
-					model = addComponent(model, s, components.get(fileN),
+					modelM = addComponent(modelM, s, components.get(fileN),
 							components);
-					model = model.addRelationship(name, s, ERefType.REFINES);
 				}
 			}
-			model = addComponent(model, ast);
+			modelM = addComponent(modelM, ast);
 		}
-		return model;
+		return modelM;
 	}
 
-	public EventBModel addComponent(final EventBModel model, final Start ast)
-			throws BException {
-		ComponentExtractor modelE = new ComponentExtractor(model);
+	public ModelModifier addComponent(final ModelModifier modelM,
+			final Start ast) throws BException {
+		ComponentExtractor modelE = new ComponentExtractor(modelM);
 		ast.apply(modelE);
-		return modelE.getModel();
+		return modelE.getModelModifier();
 	}
 }
