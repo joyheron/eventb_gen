@@ -1,6 +1,6 @@
 machine UseSeq
 
-var s type s : seq(INIT) init s:=emptySeq ;
+var s type s : seq(INT) init s:=emptySeq ;
 NAT x := 0
 
 invariants
