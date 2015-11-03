@@ -2,18 +2,13 @@ machine bowl2
 refines bowl1
 sees cherries
 
-variables bowl
+var bowl type bowl <: cherries init bowl := {}
+
 invariants
-  @inv bowl <: cherries
-  @inv2 card(bowl) <= 10
+  @inv card(bowl) <= 10
   @gluing size = card(bowl)
 
 events
-  event INITIALISATION
-    then
-      @act bowl := {}
-  end
-  
   event put
     refines put
   	any handfull

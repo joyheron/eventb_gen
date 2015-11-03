@@ -1,16 +1,7 @@
 machine euclid
   sees definitions limits
-variables u v
-invariants
-  @inv u : 0..k
-  @inv2 v : 0..k
-
-events
-  event INITIALISATION
-    then
-      @act u:=m
-      @act2 v:=n
-  end
+  
+var u type u : 0..k init u:=m ; var v type v : 0..k init v:=n
 
 algorithm
   while: u /= 0 

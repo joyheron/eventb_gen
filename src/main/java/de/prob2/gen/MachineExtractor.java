@@ -9,9 +9,11 @@ import org.eventb.core.ast.extension.IFormulaExtension;
 import com.google.common.base.Joiner;
 
 import de.be4.eventbalg.core.parser.node.AAlgorithm;
+import de.be4.eventbalg.core.parser.node.AComplexTypedVar;
 import de.be4.eventbalg.core.parser.node.ADerivedInvariant;
 import de.be4.eventbalg.core.parser.node.AEvent;
 import de.be4.eventbalg.core.parser.node.AInvariant;
+import de.be4.eventbalg.core.parser.node.APrimitiveTypedVar;
 import de.be4.eventbalg.core.parser.node.AVariable;
 import de.be4.eventbalg.core.parser.node.AVariant;
 import de.be4.eventbalg.core.parser.node.TComment;
@@ -43,6 +45,29 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.variable(node.getName().getText(),
 					getComment(node.getComments()));
+		} catch (ModelGenerationException e) {
+			handleException(e, node);
+		}
+	}
+
+	@Override
+	public void caseAPrimitiveTypedVar(APrimitiveTypedVar node) {
+		try {
+			String name = node.getName().getText();
+			String type = node.getType().getText();
+			String init = node.getExpression().getText();
+			machineM = machineM.var_block(name, name + " : " + type, name
+					+ " := " + init);
+		} catch (ModelGenerationException e) {
+			handleException(e, node);
+		}
+	}
+
+	@Override
+	public void caseAComplexTypedVar(AComplexTypedVar node) {
+		try {
+			machineM = machineM.var_block(node.getName().getText(), node
+					.getTypingpred().getText(), node.getInit().getText());
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}

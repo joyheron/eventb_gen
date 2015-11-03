@@ -1,17 +1,10 @@
 machine UseSeq
-  
-variables s x
-invariants
-  @inv s : seq(INT)
-  @inv2 x : NAT
-  @inv3 seqSize(s) = x
 
-events
-  event INITIALISATION
-    then
-      @act s:=emptySeq
-      @act2 x:=0
-  end
+var s type s : seq(INIT) init s:=emptySeq ;
+NAT x := 0
+
+invariants
+  @inv seqSize(s) = x
   
 algorithm
 	while: x < 10

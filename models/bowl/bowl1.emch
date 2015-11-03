@@ -1,16 +1,11 @@
 machine bowl1
-  
-variables size
+
+NAT size := 0
+
 invariants
-  @inv size : NAT
-  @inv2 size <= 10
+  @inv size <= 10
 
 events
-  event INITIALISATION
-    then
-      @act size := 0
-  end
-  
   event put
   	any x
   	where
