@@ -32,4 +32,5 @@ public abstract class ElementExtractor extends DepthFirstAdapter {
 					((FormulaTypeException) e).getExpected());
 		}
 	}
+
 }

@@ -9,11 +9,10 @@ import org.eventb.core.ast.extension.IFormulaExtension;
 import com.google.common.base.Joiner;
 
 import de.be4.eventbalg.core.parser.node.AAlgorithm;
-import de.be4.eventbalg.core.parser.node.AComplexTypedVar;
 import de.be4.eventbalg.core.parser.node.ADerivedInvariant;
 import de.be4.eventbalg.core.parser.node.AEvent;
 import de.be4.eventbalg.core.parser.node.AInvariant;
-import de.be4.eventbalg.core.parser.node.APrimitiveTypedVar;
+import de.be4.eventbalg.core.parser.node.ATypedVar;
 import de.be4.eventbalg.core.parser.node.AVariable;
 import de.be4.eventbalg.core.parser.node.AVariant;
 import de.be4.eventbalg.core.parser.node.TComment;
@@ -23,7 +22,7 @@ import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.MachineModifier;
 import de.prob.model.eventb.ModelGenerationException;
 import de.prob.model.eventb.algorithm.AlgorithmPrettyPrinter;
-import de.prob.model.eventb.algorithm.Block;
+import de.prob.model.eventb.algorithm.ast.Block;
 import de.prob.model.representation.BEvent;
 
 public class MachineExtractor extends ElementExtractor {
@@ -40,6 +39,10 @@ public class MachineExtractor extends ElementExtractor {
 		return machineM.getMachine();
 	}
 
+	public MachineModifier getMachineModifier() {
+		return machineM;
+	}
+
 	@Override
 	public void caseAVariable(final AVariable node) {
 		try {
@@ -51,20 +54,7 @@ public class MachineExtractor extends ElementExtractor {
 	}
 
 	@Override
-	public void caseAPrimitiveTypedVar(APrimitiveTypedVar node) {
-		try {
-			String name = node.getName().getText();
-			String type = node.getType().getText();
-			String init = node.getExpression().getText();
-			machineM = machineM.var_block(name, name + " : " + type, name
-					+ " := " + init);
-		} catch (ModelGenerationException e) {
-			handleException(e, node);
-		}
-	}
-
-	@Override
-	public void caseAComplexTypedVar(AComplexTypedVar node) {
+	public void caseATypedVar(ATypedVar node) {
 		try {
 			machineM = machineM.var_block(node.getName().getText(), node
 					.getTypingpred().getText(), node.getInit().getText());
@@ -78,7 +68,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), false, getComment(node
-							.getComments()));
+					.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -89,7 +79,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), true, getComment(node
-							.getComments()));
+					.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -124,7 +114,7 @@ public class MachineExtractor extends ElementExtractor {
 		if (Main.debug) {
 			System.out.println("Algorithm Generated:");
 			System.out.println(new AlgorithmPrettyPrinter(algorithm)
-			.prettyPrint());
+					.prettyPrint());
 		}
 		machineM = new MachineModifier(machineM.getMachine().addTo(Block.class,
 				algorithm), typeEnv);

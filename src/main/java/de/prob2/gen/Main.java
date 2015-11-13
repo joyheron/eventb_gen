@@ -16,12 +16,10 @@ import org.apache.commons.cli.PosixParser;
 
 import de.be4.eventbalg.core.parser.BException;
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions;
 import de.prob.model.eventb.algorithm.AlgorithmTranslator;
-import de.prob.model.eventb.algorithm.NaiveTerminationAnalysis;
 import de.prob.model.eventb.algorithm.graph.GraphMerge;
 import de.prob.model.eventb.algorithm.graph.IGraphTransformer;
-import de.prob.model.eventb.algorithm.graph.NaiveGenerationAlgorithm;
-import de.prob.model.eventb.algorithm.graph.OptimizedGenerationAlgorithm;
 import de.prob.model.eventb.translate.ModelToXML;
 
 public class Main {
@@ -29,9 +27,9 @@ public class Main {
 	public final static String DEBUG = "debug";
 	public final static String PATH = "path";
 	public final static String GENERATE = "generate";
-	public final static String NAIVE = "naive";
 	public final static String MERGE = "mergeBranches";
-	public final static String TERMINATION = "termination";
+	public final static String OPTIMIZE = "optimize";
+	public final static String ASSERTIONS = "propagateAssertions";
 
 	public static boolean debug = false;
 
@@ -63,27 +61,12 @@ public class Main {
 				if (debug) {
 					System.out.println("running model generation algorithm");
 				}
-				model = new AlgorithmTranslator(model,
-						new OptimizedGenerationAlgorithm(transformers)).run();
-				if (line.hasOption(TERMINATION)) {
-					if (debug) {
-						System.out.println("running termination analysis");
-					}
-					model = new NaiveTerminationAnalysis(model).run();
-				}
-			} else if (line.hasOption(NAIVE)) {
-				if (debug) {
-					System.out
-					.println("running naive model generation algorithm");
-				}
-				model = new AlgorithmTranslator(model,
-						new NaiveGenerationAlgorithm(transformers)).run();
-				if (line.hasOption(TERMINATION)) {
-					if (debug) {
-						System.out.println("running termination analysis");
-					}
-					model = new NaiveTerminationAnalysis(model).run();
-				}
+				AlgorithmGenerationOptions opts = new AlgorithmGenerationOptions()
+						.optimize(line.hasOption(OPTIMIZE))
+						.mergeBranches(line.hasOption(MERGE))
+						.propagateAssertions(line.hasOption(ASSERTIONS));
+
+				model = new AlgorithmTranslator(model, opts).run();
 			}
 
 			if (debug) {
@@ -125,17 +108,16 @@ public class Main {
 		Option generate = new Option(GENERATE,
 				"run an algorithm to generate Event-B models based on an algorithm description");
 
-		Option naive = new Option(
-				NAIVE,
-				"naive algorithm for the generate of Event-B models based an algorithm description");
+		Option optimize = new Option(
+				OPTIMIZE,
+				"optimize algorithm generation to combine assignments with preceding boolean choices.");
 
 		Option merge = new Option(
 				MERGE,
 				"merge branches within the control flow graph during algorithm translation in order to optimize the result");
 
-		Option termination = new Option(
-				TERMINATION,
-				"use in connection with 'naive' algorithm to generate specifications including a framework to help with termination proofs");
+		Option assertions = new Option(ASSERTIONS,
+				"propage assertions throughout an algorithm to help with automatic proving");
 
 		OptionGroup required = new OptionGroup();
 		required.setRequired(true);
@@ -144,9 +126,9 @@ public class Main {
 		options.addOption(name);
 		options.addOption(debug);
 		options.addOption(generate);
-		options.addOption(naive);
+		options.addOption(optimize);
 		options.addOption(merge);
-		options.addOption(termination);
+		options.addOption(assertions);
 		return options;
 	}
 }

@@ -1,17 +1,14 @@
 package de.prob2.gen;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.be4.eventbalg.core.parser.analysis.DepthFirstAdapter;
-import de.be4.eventbalg.core.parser.node.AConstant;
 import de.be4.eventbalg.core.parser.node.AContextParseUnit;
 import de.be4.eventbalg.core.parser.node.AMachineParseUnit;
+import de.be4.eventbalg.core.parser.node.AProcedureParseUnit;
 import de.be4.eventbalg.core.parser.node.TIdentifierLiteral;
-import de.prob.model.eventb.Context;
-import de.prob.model.eventb.EventBMachine;
-import de.prob.model.representation.ModelElementList;
-import de.prob.model.representation.DependencyGraph.ERefType;
 
 public class ReferenceExtractor extends DepthFirstAdapter {
 
@@ -57,6 +54,14 @@ public class ReferenceExtractor extends DepthFirstAdapter {
 		context = true;
 		for (TIdentifierLiteral ctx : node.getExtendsNames()) {
 			extendsL.add(ctx.getText());
+		}
+	}
+
+	@Override
+	public void caseAProcedureParseUnit(AProcedureParseUnit node) {
+		machine = true;
+		for (TIdentifierLiteral ctx : node.getSeen()) {
+			sees.add(ctx.getText());
 		}
 	}
 

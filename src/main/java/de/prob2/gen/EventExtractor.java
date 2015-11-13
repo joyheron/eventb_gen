@@ -24,7 +24,6 @@ import de.prob.model.eventb.Event.EventType;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventModifier;
 import de.prob.model.eventb.ModelGenerationException;
-import de.prob.model.representation.ElementComment;
 import de.prob.model.representation.ModelElementList;
 
 public class EventExtractor extends ElementExtractor {

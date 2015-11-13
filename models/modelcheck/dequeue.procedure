@@ -1,0 +1,25 @@
+procedure dequeue(queue) => newQueue, element
+   sees c1_ModelElements
+
+   typing queue: POW(STATES)
+   typing newQueue: POW(STATES)
+   typing element: STATES
+
+   precondition queue /= {} & (#z.z : queue)
+   postcondition element : queue & newQueue = queue \ {element}
+   
+   implementation
+      var q type q : POW(STATES) init q := queue ;
+      var e type e : STATES init e :: STATES
+      invariants
+         @inv q <: queue
+      
+      algorithm
+         assert: q /= {} & q = queue ;
+         assign: e :: q ;
+         assign: q := q \ {e} ;
+         assert: e : queue & q = queue \ {e} ;
+         return q,e
+      end
+   end
+end

@@ -1,0 +1,34 @@
+procedure check_inv(s) => BOOL res
+  sees c1_ModelElements
+  
+  typing s: STATES
+  
+  precondition TRUE=TRUE
+  postcondition res = bool(!i.i : INVARIANTS => s|->i:truth)
+  
+  implementation
+    var r type r : BOOL init r := FALSE ;
+    var invs type invs <: INVARIANTS init invs := INVARIANTS ;
+    var i type i : INVARIANTS init i :: INVARIANTS ;
+    var checked type checked <: INVARIANTS init checked := {}
+    
+    algorithm
+      while: invs /= {}
+        invariant (invs \/ checked) = INVARIANTS & (!iv.iv : checked => s|->iv:truth)
+      do
+        assign: i :: invs ;
+        if: not(s|->i:truth)
+        then
+          assign: r := FALSE ;
+          assert: r = FALSE & not(s|->i:truth) ;
+          return r
+        end ;
+        assign: checked := checked \/ {i} ;
+        assign: invs := invs \ {i}
+      end ;
+      assign: r := TRUE ;
+      assert: r = TRUE & checked = INVARIANTS & (!iv.iv : INVARIANTS => s|->iv:truth) ;
+      return r
+    end 
+  end
+end

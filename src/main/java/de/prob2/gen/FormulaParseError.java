@@ -3,6 +3,10 @@ package de.prob2.gen;
 import de.hhu.stups.sablecc.patch.SourcePosition;
 
 public class FormulaParseError extends RuntimeException {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 4590296122582846115L;
 	private final SourcePosition startPosition;
 	private final SourcePosition endPosition;
 	private final String formula;

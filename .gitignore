@@ -9,3 +9,4 @@ build
 /models/gcd/GCD/**
 /models/sequences/UseSeqs/**
 /models/bowl/BowlOfCherries/**
+/models/modelcheck/ModelCheck/**

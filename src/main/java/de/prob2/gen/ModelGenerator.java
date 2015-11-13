@@ -22,7 +22,6 @@ import de.be4.eventbalg.core.parser.node.Start;
 import de.prob.Main;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.ModelModifier;
-import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.scripting.StateSpaceProvider;
 
 public class ModelGenerator {
@@ -43,7 +42,8 @@ public class ModelGenerator {
 			public boolean accept(final File dir, final String name) {
 				String lowercaseName = name.toLowerCase();
 				if (lowercaseName.endsWith(".emch")
-						|| lowercaseName.endsWith(".ctx")) {
+						|| lowercaseName.endsWith(".ctx")
+						|| lowercaseName.endsWith(".procedure")) {
 					return true;
 				} else {
 					return false;
@@ -131,6 +131,10 @@ public class ModelGenerator {
 				name = name.substring(0, name.length() - 5);
 			} else if (name.endsWith(".ctx")) {
 				name = name.substring(0, name.length() - 4);
+			} else if (name.endsWith(".procedure")) {
+				name = name.substring(0, name.length() - 10);
+				modelM = addComponent(modelM, name, e.getValue(), components);
+				continue;
 			}
 			if (modelM.getModel().getComponent(name) == null) {
 				modelM = addComponent(modelM, name, e.getValue(), components);
@@ -141,7 +145,7 @@ public class ModelGenerator {
 
 	private ModelModifier addComponent(ModelModifier modelM, String name,
 			String componentDesc, Map<String, String> components)
-					throws BException {
+			throws BException {
 		EventBParser parser = new EventBParser();
 		Start ast = parser.parse(componentDesc, false);
 		ReferenceExtractor e = new ReferenceExtractor();

@@ -4,6 +4,10 @@ import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.animator.domainobjects.EventB;
 
 public class FormulaTypeError extends RuntimeException {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1240768003086819313L;
 	private SourcePosition startPosition;
 	private SourcePosition endPosition;
 	private EventB formula;
