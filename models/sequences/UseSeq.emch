@@ -1,7 +1,7 @@
 machine UseSeq
 
 var s type s : seq(INT) init s:=emptySeq ;
-NAT x := 0
+var x type x : NAT init x := 0
 
 invariants
   @inv seqSize(s) = x

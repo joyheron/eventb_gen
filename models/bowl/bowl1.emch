@@ -1,6 +1,6 @@
 machine bowl1
 
-NAT size := 0
+var size type size : NAT init size := 0
 
 invariants
   @inv size <= 10

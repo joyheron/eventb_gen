@@ -1,6 +1,6 @@
 machine bowl2
-refines bowl1
-sees cherries
+  refines bowl1
+  sees cherries
 
 var bowl type bowl <: cherries init bowl := {}
 
