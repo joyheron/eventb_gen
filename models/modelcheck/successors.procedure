@@ -1,0 +1,31 @@
+procedure successors(s) => successors
+  sees c1_ModelElements
+  
+  typing s: STATES
+  typing successors: POW(STATES)
+  
+  precondition TRUE=TRUE
+  postcondition successors = {t ∣ s ↦ t∈transitions}
+  
+  implementation
+    var succs type succs ∈ ℙ(STATES) init succs ≔ ∅ ;
+    var notsuccs type notsuccs ∈ ℙ(STATES) init notsuccs ≔ ∅ ;
+    var unchecked type unchecked ⊆ ran(transitions) init unchecked ≔ ran(transitions) ;
+    var to type to ∈ STATES init to :∈ STATES
+    algorithm 
+      while: unchecked ≠ ∅
+        invariant succs ⊆ {t ∣ s↦t ∈ transitions} ∧
+                  notsuccs ⊆ {t ∣ s↦t ∉ transitions} ∧
+                  succs ∪ notsuccs ∪ unchecked = ran(transitions)
+      do
+        unchecked,to ≔ dequeue(unchecked) ;
+        if: s ↦ to ∈ transitions then
+          assign: succs ≔ succs ∪ {to}
+        else
+          assign: notsuccs ≔ notsuccs ∪ {to}
+        end
+      end ;
+      return succs
+    end
+  end
+end

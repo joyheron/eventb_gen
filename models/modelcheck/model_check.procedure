@@ -1,0 +1,52 @@
+procedure model_check() => result, state
+  sees c1_ModelElements
+  
+  typing result: MCResult
+  typing state: STATES
+  
+  precondition TRUE=TRUE
+  postcondition (result=mc_ok ⇒ state=root) ∧ 
+     (result=counter_example ⇒ (∃i·i∈INVARIANTS ∧ state ↦ i∉truth)) ∧
+     (result=deadlock ⇒ {t ∣ state ↦ t∈transitions} = ∅)
+
+  implementation
+    var queue type queue ∈ ℙ(STATES) init queue ≔ {root} ;
+    var known type known ∈ ℙ(STATES) init known ≔ {root} ;
+    var s type s ∈ STATES init s :: STATES ;
+    var invok type invok ∈ BOOL init invok ≔ TRUE ;
+    var res type res ∈ MCResult init res :∈ MCResult ;
+    var succs type succs ∈ ℙ(STATES) init succs ≔ ∅
+    algorithm
+      while: queue ≠ ∅
+      do 
+        queue,s ≔ dequeue(queue) ;
+        invok ≔ check_inv(s) ;
+        if: invok = FALSE then
+          assign: res ≔ counter_example ;
+          assert: res = counter_example ∧ (∃i·i ∈ INVARIANTS ∧ s↦i ∉ truth) ;
+          return res,s
+        end ;
+        
+        succs ≔ successors(s) ;
+        if: succs = ∅ then
+          assign: res ≔ deadlock ;
+          assert: res = deadlock ∧ {t ∣ s↦t ∈ transitions} = ∅ ;
+          return res,s
+        end ;
+        
+        while: succs ≠ ∅
+        do
+          succs,s ≔ dequeue(succs) ;
+          if: s ∉ known then
+            assign: queue ≔ queue ∪ {s} ;
+            assign: known ≔ known ∪ {s}
+          end
+        end
+      end ;
+      assign: res ≔ mc_ok ;
+      assign: s ≔ root ;
+      assert: res = mc_ok ∧ s = root ;
+      return res,s
+    end
+  end
+end     

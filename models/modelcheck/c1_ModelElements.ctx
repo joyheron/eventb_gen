@@ -1,13 +1,12 @@
 context c1_ModelElements
 
-sets STATES INVARIANTS MCResult
+sets STATES INVARIANTS MCResult 
 
-constants truth transitions root mc_ok counter_example deadlock
+constants truth transitions root mc_ok counter_example deadlock 
 
 axioms
-  @axm1 truth <: STATES ** INVARIANTS
-  @axm2 transitions : STATES <-> STATES
-  @axm3 root : STATES
+  @axm1 truth ⊆ STATES × INVARIANTS
+  @axm2 transitions ∈ STATES ↔ STATES
+  @axm3 root ∈ STATES
   @axm4 partition(MCResult,{mc_ok},{counter_example},{deadlock})
-  
 end

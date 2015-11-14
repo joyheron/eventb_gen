@@ -5,20 +5,20 @@ procedure dequeue(queue) => newQueue, element
    typing newQueue: POW(STATES)
    typing element: STATES
 
-   precondition queue /= {} & (#z.z : queue)
+   precondition queue ≠ ∅ ∧ (∃z·z ∈ queue)
    postcondition element : queue & newQueue = queue \ {element}
    
    implementation
-      var q type q : POW(STATES) init q := queue ;
-      var e type e : STATES init e :: STATES
+      var q type q ∈ ℙ(STATES) init q ≔ queue ;
+      var e type e ∈ STATES init e :∈ STATES
       invariants
-         @inv q <: queue
+         @inv q ⊆ queue
       
       algorithm
-         assert: q /= {} & q = queue ;
-         assign: e :: q ;
-         assign: q := q \ {e} ;
-         assert: e : queue & q = queue \ {e} ;
+         assert: q ≠ ∅ ∧ q = queue ;
+         assign: e :∈ q ;
+         assign: q ≔ q ∖ {e} ;
+         assert: e ∈ queue ∧ q = queue ∖ {e} ;
          return q,e
       end
    end
