@@ -1,0 +1,29 @@
+machine ll_parsing
+  sees symbols_prob
+  
+var nullable type nullable ∈ ℙ(Symbols) init nullable≔{} ; 
+var chng type chng ∈ BOOL init chng ≔ TRUE;
+     var worklist type worklist ⊆ G init worklist ≔ G ; 
+     var next type next ∈ G init next :∈ G 
+
+algorithm
+  while: chng = TRUE
+    invariant 1=1
+    variant card(N \ nullable)
+  do
+	  assign: chng ≔ FALSE;
+	  while: worklist /= {} 
+		invariant worklist ⊆ G ∧ next∈G
+		variant card(worklist)
+	  do
+		@n1 next :∈ worklist;
+		@w1 worklist ≔ worklist ∖ {next};
+		if: prj1(next) ∉ nullable ∧ ran(prj2(next))⊆nullable then
+		  @n2 nullable ≔ nullable ∪ {prj1(next)} ;
+		  @c chng ≔ TRUE
+		end 
+	  end
+  end
+end
+
+end

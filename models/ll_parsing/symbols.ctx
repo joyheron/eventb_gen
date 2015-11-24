@@ -1,0 +1,11 @@
+context symbols
+
+sets Symbols
+constants N T String G 
+
+axioms
+  @axm1 partition(Symbols,N,T) // partitioning the Symbols in Non-Terminals and Terminals
+  @axm2 String = {w|w:1..card(w) --> Symbols} // a set of Strings
+  @axm3 G : N <-> String // a Grammar
+  
+end

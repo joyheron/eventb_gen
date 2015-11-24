@@ -1,0 +1,9 @@
+context symbols_prob extends symbols
+
+constants a b c S R
+
+axioms
+  @probaxm1 partition(T,{a},{b},{c})
+  @probaxm2 partition(N,{S},{R})
+  @probaxm3 G = { S |-> {1|->a,2|->S,3|->b}, S |-> {1|->c}, R |-> {}, R |-> {1|->S, 2|->S}}
+end
