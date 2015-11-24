@@ -12,10 +12,10 @@ In order to setup the eclipse project run: gradle eclipse (or ./gradlew eclipse 
 * **path** *path/to/directory* - This argument is required. The application locates the directory on the local file system and attempts to parse and load all .emch and .ctx files in the specified directory
 * **name** *name* - This argument specifies the name of the generated Event-B project. If not specified, a generic name for the project will be chosen (i.e. *modelgen*)
 * **debug** - If this flag is set, debug information about the model will be printed
-* **generate** - run an algorithm to generate Event-B models based on an algorithm description
-* **naive** - naive algorithm for the generate of Event-B models based an algorithm description
+* **generate** - run the algorithm translation to generate sequential models based on an algorithm description
 * **mergeBranches** - merge branches within the control flow graph during algorithm translation in order to optimize the result
-* **termination** - use in connection with 'naive' algorithm to generate specifications including a framework to help with termination proofs
+* **optimize** - optimize the translation algorithm to merge branches with succeeding assignments and decrease the number of events in the generated model
+* **propagateAssertions** - propagate loop invariants and assertions within a specified algorithm to generate inductive invariants
 
 ### Example model
 An example model can be found in the directory models/gcd/.
@@ -25,7 +25,7 @@ Files that contain incorrect Event-B models will result in exceptions.
 
 To generate an algorithm from the example, run de.prob2.gen.Main with the following arguments:
 ```
--name GCD -path models/gcd/ -generate
+-name GCD -path models/gcd/ -generate [OPTIONS]
 ```
 
 # ProB 2.0 source code
