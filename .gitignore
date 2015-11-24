@@ -11,3 +11,4 @@ build
 /models/bowl/BowlOfCherries/**
 /models/modelcheck/ModelCheck/**
 /models/multiplication/Mult/**
+/models/ll_parsing/LL/**

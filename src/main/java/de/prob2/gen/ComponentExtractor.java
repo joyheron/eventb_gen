@@ -16,7 +16,6 @@ import de.prob.model.eventb.ContextModifier;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.MachineModifier;
-import de.prob.model.eventb.ModelGenerationException;
 import de.prob.model.eventb.ModelModifier;
 import de.prob.model.eventb.algorithm.Procedure;
 import de.prob.model.representation.AbstractElement;
@@ -76,7 +75,7 @@ public class ComponentExtractor extends ElementExtractor {
 		if (node.getExtendsNames().size() == 1) {
 			String cName = node.getExtendsNames().getFirst().getText();
 			Context ctx = getContext(cName);
-			contextM.setExtends(ctx);
+			contextM = contextM.setExtends(ctx);
 		} else if (node.getExtendsNames().size() > 1) {
 			throw new IllegalArgumentException(
 					"Contexts can only refine one abstract context. Found "
@@ -90,7 +89,7 @@ public class ComponentExtractor extends ElementExtractor {
 	}
 
 	@Override
-	public void caseAProcedureParseUnit(AProcedureParseUnit node) {
+	public void caseAProcedureParseUnit(final AProcedureParseUnit node) {
 		String name = node.getName().getText();
 		LinkedList<TIdentifierLiteral> seen = node.getSeen();
 		Context ctx = null;
@@ -108,7 +107,7 @@ public class ComponentExtractor extends ElementExtractor {
 
 	}
 
-	private Context getContext(String cName) {
+	private Context getContext(final String cName) {
 		Context ctx = modelM.getModel().getContext(cName);
 		if (ctx == null) {
 			throw new IllegalArgumentException(
@@ -118,7 +117,7 @@ public class ComponentExtractor extends ElementExtractor {
 		return ctx;
 	}
 
-	private EventBMachine getMachine(String mname) {
+	private EventBMachine getMachine(final String mname) {
 		EventBMachine machine = modelM.getModel().getMachine(mname);
 		if (machine == null) {
 			throw new IllegalArgumentException(
@@ -128,7 +127,7 @@ public class ComponentExtractor extends ElementExtractor {
 		return machine;
 	}
 
-	public String getComment(List<TComment> comments) {
+	public String getComment(final List<TComment> comments) {
 		List<String> cmts = new ArrayList<String>();
 		for (TComment tComment : comments) {
 			cmts.add(tComment.getText());
