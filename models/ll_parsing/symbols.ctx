@@ -1,14 +1,11 @@
 context symbols
 
 sets Symbols
-constants N T String G   a b c S R
+constants N T String G 
 
 axioms
   @axm1 partition(Symbols,N,T) // partitioning the Symbols in Non-Terminals and Terminals
   @axm2 String = {w|w:1..card(w) --> Symbols} // a set of Strings
   @axm3 G : N <-> String // a Grammar
   
-  @probaxm1 partition(T,{a},{b},{c})
-  @probaxm2 partition(N,{S},{R})
-  @probaxm3 G = { S |-> {1|->a,2|->S,3|->b}, S |-> {1|->c}, R |-> {}, R |-> {1|->S, 2|->S}}
 end

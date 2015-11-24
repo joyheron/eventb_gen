@@ -1,5 +1,5 @@
 machine ll_parsing
-  sees symbols
+  sees symbols_prob
   
 var nullable type nullable ∈ ℙ(Symbols) init nullable≔{} ; 
 var chng type chng ∈ BOOL init chng ≔ TRUE;
