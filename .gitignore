@@ -10,3 +10,4 @@ build
 /models/sequences/UseSeqs/**
 /models/bowl/BowlOfCherries/**
 /models/modelcheck/ModelCheck/**
+/models/multiplication/Mult/**

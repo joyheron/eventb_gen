@@ -1,0 +1,21 @@
+procedure mult(NAT x, NAT y)=> NAT product
+  precondition x ≥ 0 ∧ y ≥ 0
+  postcondition product = x * y
+  
+  implementation
+    var x0 type x0 ∈ NAT init x0 ≔ x ;
+    var res type res ∈ NAT init res ≔ 0
+    
+    algorithm
+      while: x0 > 0
+        invariant res = (x - x0) * y
+      do
+        assert: x0 > 0 ;
+        assign: x0 ≔ x0 - 1 ;
+        assign: res ≔ res + y
+      end ;
+      assert: res = x * y ;
+      return res
+    end
+  end
+end
