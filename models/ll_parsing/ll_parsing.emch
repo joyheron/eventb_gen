@@ -9,7 +9,7 @@ var chng type chng ∈ BOOL init chng ≔ TRUE;
 algorithm
   while: chng = TRUE
     invariant 1=1
-    variant card(N \ nullable)
+    variant 2*card(N \ nullable)+ {TRUE|->1,FALSE|->0}(chng)
   do
 	  assign: chng ≔ FALSE;
 	  while: worklist /= {} 
@@ -19,8 +19,7 @@ algorithm
 		@n1 next :∈ worklist;
 		@w1 worklist ≔ worklist ∖ {next};
 		if: prj1(next) ∉ nullable ∧ ran(prj2(next))⊆nullable then
-		  @n2 nullable ≔ nullable ∪ {prj1(next)} ;
-		  @c chng ≔ TRUE
+		  @n2 nullable,chng ≔ nullable ∪ {prj1(next)},TRUE
 		end 
 	  end
   end
