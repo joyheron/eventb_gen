@@ -30,6 +30,7 @@ public class Main {
 	public final static String MERGE = "mergeBranches";
 	public final static String OPTIMIZE = "optimize";
 	public final static String ASSERTIONS = "propagateAssertions";
+	public final static String TERMINATION = "terminationAnalysis";
 
 	public static boolean debug = false;
 
@@ -62,9 +63,10 @@ public class Main {
 					System.out.println("running model generation algorithm");
 				}
 				AlgorithmGenerationOptions opts = new AlgorithmGenerationOptions()
-						.optimize(line.hasOption(OPTIMIZE))
-						.mergeBranches(line.hasOption(MERGE))
-						.propagateAssertions(line.hasOption(ASSERTIONS));
+				.optimize(line.hasOption(OPTIMIZE))
+				.mergeBranches(line.hasOption(MERGE))
+				.propagateAssertions(line.hasOption(ASSERTIONS))
+				.terminationAnalysis(line.hasOption(TERMINATION));
 
 				model = new AlgorithmTranslator(model, opts).run();
 			}
@@ -96,7 +98,7 @@ public class Main {
 				.hasArg()
 				.withDescription(
 						"specify the directory which contains the model description files (.emch for machines, .ctx for contexts)")
-						.create(PATH);
+				.create(PATH);
 
 		Option name = OptionBuilder.withArgName("name").hasArg()
 				.withDescription("specify the name for the generated project")
@@ -119,6 +121,9 @@ public class Main {
 		Option assertions = new Option(ASSERTIONS,
 				"propage assertions throughout an algorithm to help with automatic proving");
 
+		Option termination = new Option(TERMINATION,
+				"generate a variant and helpful assertions to prove algorithm termination");
+
 		OptionGroup required = new OptionGroup();
 		required.setRequired(true);
 		required.addOption(path);
@@ -129,6 +134,7 @@ public class Main {
 		options.addOption(optimize);
 		options.addOption(merge);
 		options.addOption(assertions);
+		options.addOption(termination);
 		return options;
 	}
 }
