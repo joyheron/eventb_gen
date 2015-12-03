@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
 		compile group: "de.hhu.stups", name: "de.prob2.kernel", version: prob_version, changing: true
-    compile group: "de.hhu.stups", name: "eventbalg", version: "2.5.0-SNAPSHOT", changing: true
+    compile group: "de.hhu.stups", name: "eventbalg", version: "2.5.1-SNAPSHOT", changing: true
 }
 
 task run(type:JavaExec) {
