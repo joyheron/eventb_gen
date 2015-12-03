@@ -9,7 +9,7 @@ var chng type chng ∈ BOOL init chng ≔ TRUE;
 algorithm
   while: chng = TRUE
     invariant 1=1
-    variant 2*card(N \ nullable)+ {TRUE|->1,FALSE|->0}(chng)
+    variant 2*(card(Symbols) - card(nullable)) + {TRUE|->1,FALSE|->0}(chng)
   do
 	  assign: chng ≔ FALSE;
 	  while: worklist /= {} 
