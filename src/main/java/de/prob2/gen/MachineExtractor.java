@@ -56,7 +56,7 @@ public class MachineExtractor extends ElementExtractor {
 	@Override
 	public void caseATypedVar(ATypedVar node) {
 		try {
-			machineM = machineM.var_block(node.getName().getText(), node
+			machineM = machineM.var(node.getName().getText(), node
 					.getTypingpred().getText(), node.getInit().getText());
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
@@ -68,7 +68,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), false, getComment(node
-					.getComments()));
+							.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -79,7 +79,7 @@ public class MachineExtractor extends ElementExtractor {
 		try {
 			machineM = machineM.invariant(node.getName().getText(), node
 					.getPredicate().getText(), true, getComment(node
-					.getComments()));
+							.getComments()));
 		} catch (ModelGenerationException e) {
 			handleException(e, node);
 		}
@@ -114,7 +114,7 @@ public class MachineExtractor extends ElementExtractor {
 		if (Main.debug) {
 			System.out.println("Algorithm Generated:");
 			System.out.println(new AlgorithmPrettyPrinter(algorithm)
-					.prettyPrint());
+			.prettyPrint());
 		}
 		machineM = new MachineModifier(machineM.getMachine().addTo(Block.class,
 				algorithm), typeEnv);
