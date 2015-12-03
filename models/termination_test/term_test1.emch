@@ -1,0 +1,26 @@
+machine term_test1
+
+var i1 type i1:INT init i1:=4;
+var i2 type i2:INT init i2:=4;
+var j type j:INT init j:=0;
+var k type k:INT init k:=0
+
+algorithm
+   while: i1+i2>0
+      invariant i1+i2:NAT
+      variant i1+i2
+   do
+      assign: i1 := i1+1;
+      assign: j:= (i1+i2)*3;
+      while: j>0
+         invariant j:0..((i1+i2)*3)
+         variant j
+      do
+        assign: k := k+1;
+        assign: j := j-1
+      end;
+      assign: i2 := i2-2
+    end
+end
+
+end

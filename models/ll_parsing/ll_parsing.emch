@@ -19,8 +19,7 @@ algorithm
 		@n1 next :∈ worklist;
 		@w1 worklist ≔ worklist ∖ {next};
 		if: prj1(next) ∉ nullable ∧ ran(prj2(next))⊆nullable then
-		  @n2 nullable ≔ nullable ∪ {prj1(next)} ;
-		  @c chng ≔ TRUE
+		  @n2 nullable,chng ≔ nullable ∪ {prj1(next)},TRUE
 		end 
 	  end
   end

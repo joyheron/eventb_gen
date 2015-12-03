@@ -1,0 +1,39 @@
+procedure first_of_str(NullableSet,FirstRel,str) => first_str
+   sees symbols_prob
+
+   typing NullableSet: POW(N)
+   typing FirstRel: N <-> T
+   typing str: String
+   typing first_str: POW(T)
+
+   precondition str:String & FirstRel: N <-> T & NullableSet <: N
+   postcondition (first_str <: T) & (str[{1}] \ T) <: first_str & first_str <: (ran(str) \/ FirstRel[ran(str)])
+   
+   implementation
+      var i type i:NAT1 init i ≔ 1;
+      var F type F<:T init F := {}
+      invariants
+         @inva i:1..(card(str)+1)
+         @invb F <: T
+      
+      algorithm
+      	 while: i <= card(str)
+      	    invariant i:1..(card(str)+1)
+      	    variant card(str)+1-i
+      	 do
+      	    if: str(i) : T then
+      	      @term F := F \/ {str(i)}
+      	    else
+       	      @nonterm F := F \/ FirstRel[{str(i)}]
+       	    end;
+      	    assert: i <= card(str);
+      	    if: str(i) : NullableSet then
+      	      @inc i := i+1
+      	    else
+      	      @exit i := card(str)+1
+      	    end
+      	 end; 
+         return F
+      end
+   end
+end
