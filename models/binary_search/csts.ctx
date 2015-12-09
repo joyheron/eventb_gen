@@ -1,0 +1,13 @@
+context csts
+
+constants mxint myNAT myINT sze arr goal 
+
+axioms
+  @axm1 mxint:NAT
+  @axm2 myNAT = 0..mxint
+  @axm3 myINT = (-mxint)..mxint
+  @axm4 sze : myNAT
+  @axm5 arr : 1..sze --> myINT
+  @axm6 goal : myINT
+  @axm7 sze < mxint
+end
