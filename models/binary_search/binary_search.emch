@@ -7,7 +7,7 @@ var j type j ∈ myNAT init j ≔ sze;
 var mid type mid : myNAT init mid ≔ 0
 
 algorithm
-  while: i<j & found=FALSE
+  while: i<=j & found=FALSE
     invariant j:0..sze & i:1..(sze+1)
     variant j-i
   do
