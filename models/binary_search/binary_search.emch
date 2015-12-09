@@ -1,0 +1,30 @@
+machine binary_search
+  sees csts
+  
+var found type found:BOOL init found≔FALSE ; 
+var i type i ∈ myNAT init i ≔ 1;
+var j type j ∈ myNAT init j ≔ sze;
+var mid type mid : myNAT init mid ≔ 0
+
+algorithm
+  while: i<=j & found=FALSE
+    invariant j:0..sze & i:1..(sze+1)
+    variant j-i
+  do
+	  assign: mid ≔ i+j;
+	  assign: mid := mid / 2;
+	  assert: mid:dom(arr);
+	  if: arr(mid)=goal then
+	    assign: found := TRUE
+	  else
+	    if: arr(mid)<goal then
+	      assign: i := mid+1
+	    else
+	      assign: j := mid-1
+	    end
+	  end
+  end;
+  assert: found=TRUE <=> goal:ran(arr)
+end
+
+end

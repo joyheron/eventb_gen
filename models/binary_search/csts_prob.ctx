@@ -1,0 +1,8 @@
+context csts_prob extends csts
+
+axioms
+  @probaxm1 mxint=10
+  @probaxm2 sze=6
+  @probaxm3 arr = {1|->0, 2|->1, 3|->1, 4|->3, 5|->6, 6|->9}
+  @probaxm4 goal : -1..10
+end
