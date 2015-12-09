@@ -23,7 +23,8 @@ algorithm
 	      assign: j := mid-1
 	    end
 	  end
-  end
+  end;
+  assert: found=TRUE <=> goal:ran(arr)
 end
 
 end
