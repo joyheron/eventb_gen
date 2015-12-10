@@ -7,4 +7,4 @@ ll: build/libs/eventb_gen.jar
 term: build/libs/eventb_gen.jar
 	java -jar build/libs/eventb_gen.jar -name TermTest -path models/termination_test/ -generate -terminationAnalysis
 binary: build/libs/eventb_gen.jar
-	java -jar build/libs/eventb_gen.jar -name binary -path models/binary_search/ -generate
+	java -jar build/libs/eventb_gen.jar -name binary -path models/binary_search/ -generate -mergeBranches -optimize
