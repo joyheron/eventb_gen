@@ -1,3 +1,0 @@
-language: java
-after_success:
-- travis-custom-deploy sftp build/libs/eventb_gen.jar
