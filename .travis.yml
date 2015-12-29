@@ -1,4 +1,8 @@
 language: java
+script: gradle uberjar
+before_install:
+- rvm install 2.0.0
+- gem install travis-custom-deploy
 after_success:
 - travis-custom-deploy sftp build/libs/eventb_gen.jar
 env:
