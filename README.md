@@ -16,6 +16,9 @@ In order to setup the eclipse project run: gradle eclipse (or ./gradlew eclipse 
 * **mergeBranches** - merge branches within the control flow graph during algorithm translation in order to optimize the result
 * **optimize** - optimize the translation algorithm to merge branches with succeeding assignments and decrease the number of events in the generated model
 * **propagateAssertions** - propagate loop invariants and assertions within a specified algorithm to generate inductive invariants
+* **terminationAnalysis** - generate a variant and helpful assertions to prove algorithm termination
+* **loopEvent** - add extra event to end of a while loop in the translation
+* **default** - run generate Event-B specification with default options for algorithm translatio
 
 ### Example model
 An example model can be found in the directory models/gcd/.
@@ -26,6 +29,11 @@ Files that contain incorrect Event-B models will result in exceptions.
 To generate an algorithm from the example, run de.prob2.gen.Main with the following arguments:
 ```
 -name GCD -path models/gcd/ -generate [OPTIONS]
+```
+
+or to generate an algorithm using the default options, run with the arguments:
+```
+-name GCD -path models/gcd/ -default
 ```
 
 # ProB 2.0 source code
