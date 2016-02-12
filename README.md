@@ -1,5 +1,7 @@
 # Generate Event-B Projects using the ProB 2.0 API
 
+[![Build Status](https://travis-ci.org/joyclark/eventb_gen.svg)](https://travis-ci.org/joyclark/eventb_gen/)
+
 This library provides an interface to generate Event-B projects from text machine and context descriptions. 
 The format for the machine and context descriptions is determined by the eventbalg parser available from the [ProB Parsers](https://github.com/bendisposto/probparsers).
 This is the structural Event-B parser currently used for the Camille text editor which is extended to provide support for algorithm descriptions.
