@@ -18,8 +18,8 @@ import de.be4.eventbalg.core.parser.BException;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.algorithm.AlgorithmGenerationOptions;
 import de.prob.model.eventb.algorithm.AlgorithmTranslator;
-import de.prob.model.eventb.algorithm.graph.GraphMerge;
 import de.prob.model.eventb.algorithm.graph.IGraphTransformer;
+import de.prob.model.eventb.generate.ModelGenerator;
 import de.prob.model.eventb.translate.ModelToXML;
 
 public class Main {
@@ -27,8 +27,10 @@ public class Main {
 	public final static String DEBUG = "debug";
 	public final static String PATH = "path";
 	public final static String GENERATE = "generate";
+	public final static String DEFAULT = "default";
 	public final static String MERGE = "mergeBranches";
 	public final static String OPTIMIZE = "optimize";
+	public final static String LOOPEVENT = "loopEvent";
 	public final static String ASSERTIONS = "propagateAssertions";
 	public final static String TERMINATION = "terminationAnalysis";
 
@@ -51,22 +53,24 @@ public class Main {
 			}
 
 			String path = line.getOptionValue(PATH);
+
 			EventBModel model = new ModelGenerator(path, name).getModel();
 
-			List<IGraphTransformer> transformers = new ArrayList<IGraphTransformer>();
-			if (line.hasOption(MERGE)) {
-				transformers.add(new GraphMerge());
-			}
-
-			if (line.hasOption(GENERATE)) {
+			if (line.hasOption(GENERATE) || line.hasOption(DEFAULT)) {
 				if (debug) {
 					System.out.println("running model generation algorithm");
 				}
-				AlgorithmGenerationOptions opts = new AlgorithmGenerationOptions()
-				.optimize(line.hasOption(OPTIMIZE))
-				.mergeBranches(line.hasOption(MERGE))
-				.propagateAssertions(line.hasOption(ASSERTIONS))
-				.terminationAnalysis(line.hasOption(TERMINATION));
+				AlgorithmGenerationOptions opts = new AlgorithmGenerationOptions();
+				if (line.hasOption(DEFAULT)) {
+					opts = AlgorithmGenerationOptions.DEFAULT;
+				} else {
+					opts = new AlgorithmGenerationOptions()
+					.optimize(line.hasOption(OPTIMIZE))
+					.mergeBranches(line.hasOption(MERGE))
+					.propagateAssertions(line.hasOption(ASSERTIONS))
+					.terminationAnalysis(line.hasOption(TERMINATION))
+					.loopEvent(line.hasOption(LOOPEVENT));
+				}
 
 				model = new AlgorithmTranslator(model, opts).run();
 			}
@@ -86,7 +90,6 @@ public class Main {
 		} catch (BException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	@SuppressWarnings("static-access")
@@ -98,7 +101,7 @@ public class Main {
 				.hasArg()
 				.withDescription(
 						"specify the directory which contains the model description files (.emch for machines, .ctx for contexts)")
-				.create(PATH);
+						.create(PATH);
 
 		Option name = OptionBuilder.withArgName("name").hasArg()
 				.withDescription("specify the name for the generated project")
@@ -124,6 +127,13 @@ public class Main {
 		Option termination = new Option(TERMINATION,
 				"generate a variant and helpful assertions to prove algorithm termination");
 
+		Option loopEvent = new Option(LOOPEVENT,
+				"add extra event to end of a while loop in the translation");
+
+		Option defaultGen = new Option(
+				DEFAULT,
+				"run generate Event-B specification with default options for algorithm translation");
+
 		OptionGroup required = new OptionGroup();
 		required.setRequired(true);
 		required.addOption(path);
@@ -135,6 +145,8 @@ public class Main {
 		options.addOption(merge);
 		options.addOption(assertions);
 		options.addOption(termination);
+		options.addOption(loopEvent);
+		options.addOption(defaultGen);
 		return options;
 	}
 }
