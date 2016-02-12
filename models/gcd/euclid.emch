@@ -9,10 +9,9 @@ algorithm
   	variant u + v
   do
     if: u < v then
-      @v v := v - u 
-    else
-      @u u := u - v 
-    end 
+      assign: u,v := v,u 
+    end ;
+    assign: u := u - v 
   end ;
   assert: m↦n↦v ∈ GCD
 end
