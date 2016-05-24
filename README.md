@@ -38,6 +38,10 @@ or to generate an algorithm using the default options, run with the arguments:
 -name GCD -path models/gcd/ -default
 ```
 
+# Download EventBGen
+
+A deployed version of the EventBGen tool can be downloaded as a JAR from [here](https://www3.hhu.de/stups/downloads/eventb_gen/).
+
 # ProB 2.0 source code
 The source code of the current ProB 2.0 development is located at http://github.com/bendisposto/prob2
 
